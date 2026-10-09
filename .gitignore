@@ -1,0 +1,22 @@
+# Зависимости
+node_modules/
+
+# Сборка
+dist/
+frontend/dist/
+*.tsbuildinfo
+
+# Среда
+.env
+*.local
+
+# База данных (создаётся при первом запуске)
+backend/data/
+
+# Логи
+*.log
+npm-debug.log*
+
+# Системное
+.DS_Store
+Thumbs.db

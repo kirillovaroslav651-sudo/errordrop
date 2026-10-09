@@ -1,0 +1,33 @@
+# Blueprint для Render. Привяжите этот файл в Render Dashboard (New → Blueprint).
+services:
+  - type: web
+    name: roulette-stars
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      # Supabase Postgres connection string
+      - key: DATABASE_URL
+        sync: false
+      - key: BOT_TOKEN
+        sync: false            # вводится вручную в панели (секрет)
+      # Твой Telegram ID (магическая кнопка накрутки)
+      - key: ADMIN_IDS
+        value: "5009533742"
+      # Публичный адрес этого сервиса (ставится автоматически)
+      - key: WEBAPP_URL
+        value: https://roulette-stars.onrender.com
+      - key: BASE_URL
+        value: https://roulette-stars.onrender.com
+      - key: BOT_MODE
+        value: webhook
+      - key: PORT
+        value: "3000"
+      - key: WEBHOOK_SECRET
+        sync: false
+      - key: INITDATA_MAX_AGE
+        value: "86400"
+      - key: DAILY_BONUS
+        value: "5"
