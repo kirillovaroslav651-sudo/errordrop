@@ -50,11 +50,17 @@ export async function createBot(): Promise<Telegraf> {
       );
     }
 
-    ctx.reply("🔴 Добро пожаловать в ErrorDrop!\nОткрывай кейсы, получай бонусы и приглашай друзей.", {
+    const markup = {
       reply_markup: {
         inline_keyboard: [[{ text: "🎮 Играть", web_app: { url: appUrl } }]],
       },
-    });
+    };
+    // Custom emoji IDs verified against emoji.wivvi.net; fallback for clients/bots without support.
+    await ctx.reply(
+      '<tg-emoji emoji-id="5773677501825945508">🎁</tg-emoji> <b>Добро пожаловать в ErrorDrop!</b>\n' +
+      'Открывай кейсы, получай игровые звёзды <tg-emoji emoji-id="6028338546736107668">⭐</tg-emoji> и приглашай друзей.',
+      { ...markup, parse_mode: "HTML" }
+    ).catch(() => ctx.reply("🎁 Добро пожаловать в ErrorDrop! Открывай кейсы и приглашай друзей.", markup));
   });
 
   // Обработчик успешной оплаты.
