@@ -10,7 +10,7 @@ if (!connectionString) {
 
 export const pool = new Pool({
   connectionString,
-  ssl: connectionString.includes("localhost") || connectionString.includes("127.0.0.1") ? false : { rejectUnauthorized: true },
+  ssl: connectionString.includes("localhost") || connectionString.includes("127.0.0.1") ? false : { rejectUnauthorized: false },
   // Принудительно IPv4 — Render не имеет IPv6-маршрута (иначе ENETUNREACH)
   family: 4,
 } as any);
@@ -367,3 +367,4 @@ export async function grantReferralBonus(referrerId: number, purchaseAmount: num
 export { db };
 
 const db = pool;
+
