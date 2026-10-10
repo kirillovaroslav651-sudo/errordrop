@@ -1,8 +1,182 @@
 [
-  {"id":"daily","name":"ЕЖЕДНЕВНЫЙ","price":0,"cover":"berry-box","code":"00","subtitle":"РАЗ В СУТКИ","tone":"scarlet","giftChance":0},
-  {"id":"spark","name":"ИСКРА","price":79,"cover":"bday-candle","code":"01","subtitle":"ПЕРВЫЙ ДРОП","tone":"scarlet","giftChance":4},
-  {"id":"redline","name":"REDLINE","price":199,"cover":"astral-shard","code":"02","subtitle":"НА ПРЕДЕЛЕ","tone":"orange","giftChance":5},
-  {"id":"glitch","name":"ГЛИТЧ","price":399,"cover":"bear-terrorist","code":"03","subtitle":"ВЫХОДА НЕТ","tone":"ruby","giftChance":6},
-  {"id":"pulse","name":"ПУЛЬС","price":799,"cover":"bling-binky","code":"04","subtitle":"УЛЬТРА ДРОП","tone":"gold","giftChance":7},
-  {"id":"blackout","name":"BLACKOUT","price":1599,"cover":"bonded-ring","code":"05","subtitle":"ЛЕГЕНДАРНЫЙ","tone":"violet","giftChance":8}
+  {
+    "id": "daily",
+    "name": "ЕЖЕДНЕВНЫЙ",
+    "price": 0,
+    "cover": "berry-box",
+    "code": "00",
+    "subtitle": "РАЗ В СУТКИ",
+    "tone": "scarlet",
+    "giftChance": 0
+  },
+  {
+    "id": "spark",
+    "name": "ИСКРА",
+    "price": 99,
+    "cover": "bday-candle",
+    "code": "01",
+    "subtitle": "ПЕРВЫЙ ДРОП",
+    "tone": "scarlet",
+    "giftChance": 5,
+    "giftMax": 150,
+    "outcomes": [
+      {
+        "stars": 25,
+        "chance": 50
+      },
+      {
+        "stars": 89,
+        "chance": 45
+      }
+    ],
+    "bonusMode": "stars",
+    "bonusMax": 150
+  },
+  {
+    "id": "redline",
+    "name": "REDLINE",
+    "price": 249,
+    "cover": "astral-shard",
+    "code": "02",
+    "subtitle": "НА ПРЕДЕЛЕ",
+    "tone": "orange",
+    "giftChance": 15,
+    "giftMax": 450,
+    "outcomes": [
+      {
+        "stars": 50,
+        "chance": 25
+      },
+      {
+        "stars": 150,
+        "chance": 30
+      },
+      {
+        "stars": 250,
+        "chance": 30
+      }
+    ],
+    "bonusMode": "stars",
+    "bonusMax": 450
+  },
+  {
+    "id": "glitch",
+    "name": "ГЛИТЧ",
+    "price": 499,
+    "cover": "bear-terrorist",
+    "code": "03",
+    "subtitle": "ВЫХОДА НЕТ",
+    "tone": "ruby",
+    "giftChance": 9,
+    "giftMax": 800,
+    "outcomes": [
+      {
+        "stars": 200,
+        "chance": 40
+      },
+      {
+        "stars": 400,
+        "chance": 35
+      },
+      {
+        "stars": 500,
+        "chance": 15
+      },
+      {
+        "stars": 50,
+        "chance": 1
+      }
+    ],
+    "bonusMode": "gift"
+  },
+  {
+    "id": "pulse",
+    "name": "ПУЛЬС",
+    "price": 999,
+    "cover": "bling-binky",
+    "code": "04",
+    "subtitle": "УЛЬТРА ДРОП",
+    "tone": "gold",
+    "giftChance": 9,
+    "giftMax": 2000,
+    "outcomes": [
+      {
+        "stars": 450,
+        "chance": 40
+      },
+      {
+        "stars": 800,
+        "chance": 31
+      },
+      {
+        "stars": 1000,
+        "chance": 15
+      },
+      {
+        "stars": 100,
+        "chance": 5
+      }
+    ],
+    "bonusMode": "gift"
+  },
+  {
+    "id": "blackout",
+    "name": "BLACKOUT",
+    "price": 2499,
+    "cover": "bonded-ring",
+    "code": "05",
+    "subtitle": "ЛЕГЕНДАРНЫЙ",
+    "tone": "violet",
+    "giftChance": 9,
+    "giftMax": 4000,
+    "outcomes": [
+      {
+        "stars": 1250,
+        "chance": 40
+      },
+      {
+        "stars": 2000,
+        "chance": 30
+      },
+      {
+        "stars": 2600,
+        "chance": 16
+      },
+      {
+        "stars": 500,
+        "chance": 5
+      }
+    ],
+    "bonusMode": "gift"
+  },
+  {
+    "id": "ultraviolet",
+    "name": "ULTRAVIOLET",
+    "price": 4999,
+    "cover": "gem-signet",
+    "code": "06",
+    "subtitle": "ПРЕДЕЛ ДРОПА",
+    "tone": "violet",
+    "giftChance": 9,
+    "giftMax": 8000,
+    "outcomes": [
+      {
+        "stars": 2500,
+        "chance": 40
+      },
+      {
+        "stars": 4000,
+        "chance": 30
+      },
+      {
+        "stars": 5200,
+        "chance": 16
+      },
+      {
+        "stars": 1000,
+        "chance": 5
+      }
+    ],
+    "bonusMode": "gift"
+  }
 ]
