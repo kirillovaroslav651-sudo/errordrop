@@ -49,7 +49,7 @@ export default function App() {
   const user = getTgUser();
   const selected = cases[caseIndex];
   const inventory = me?.inventory || [];
-  const eligible = useMemo(()=>poolFor(selected.code),[selected.code]);
+  const eligible = useMemo(()=>selected.bonusMode==="gift" ? gifts.filter(g=>{const v=starValue(g);return v!==null && v<=(selected.giftMax??Number.MAX_SAFE_INTEGER)}) : [],[selected]);
   const currentGifts = useMemo(()=>gifts.filter(g=>{
     const v=starValue(g);
     const matches=`${g.name} ${v ?? ""}`.toLowerCase().includes(query.trim().toLowerCase());
@@ -94,7 +94,7 @@ export default function App() {
         data={caseId:current.id,price:current.price,reward:gift?{type:"gift",stars:0,giftId:gift.id,inventoryId:Date.now(),value:starValue(gift)??0}:{type:"stars",stars:demoStars},balance:me.user.balance};
         setMe(m=>m?{...m,user:{...m.user,balance:m.user.balance-current.price+data.reward.stars,dailyBonusReady:current.id==="daily"?false:m.user.dailyBonusReady},inventory:data.reward.giftId?[{id:data.reward.inventoryId!,giftId:data.reward.giftId,caseId:current.id,value:data.reward.value!,sellValue:Math.round(data.reward.value!*.1),status:"owned",createdAt:Date.now()/1000},...m.inventory]:m.inventory}:m);
       }else data=await api.openCase(current.id,crypto.randomUUID());
-      const pool=poolFor(current.code);
+      const pool=gifts.filter(g=>starValue(g)!==null);
       // The scrolling strip is a visual preview, never the source of the outcome.
       // Shuffle each cycle so adjacent gift cards are different and the animation
       // shows the variety in this case, while the server odds remain untouched.
