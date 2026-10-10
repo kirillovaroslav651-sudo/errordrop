@@ -13,7 +13,7 @@ function getInitData(): string {
 
 export type Tx = {
   id: number;
-  type: "purchase" | "bet_win" | "bet_lose" | "referral_bonus" | "admin_credit" | "daily_bonus";
+  type: "purchase" | "bet_win" | "bet_lose" | "referral_bonus" | "admin_credit" | "daily_bonus" | "case_open" | "case_reward" | "gift_sale";
   amount: number;
   spin_result: "win" | "lose" | null;
   game: string | null;
@@ -33,7 +33,13 @@ export type MeData = {
   };
   transactions: Tx[];
   gallery: string[];
+  inventory: InventoryItem[];
 };
+
+export type InventoryItem = { id: number; giftId: string; caseId: string; value: number; sellValue: number; status: "owned" | "sold" | "pending" | "withdrawn"; createdAt: number };
+export type CaseResult = { caseId: string; price: number; reward: { type: "stars" | "gift"; stars: number; giftId?: string; inventoryId?: number; value?: number }; balance: number };
+export type AdminPlayer = { telegramId: number; username: string | null; balance: number; inventory: InventoryItem[] };
+export type Withdrawal = { id: number; inventoryId: number; userId: number; status: string; giftId: string; username: string | null; createdAt: number };
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -53,6 +59,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   me: () => request<MeData>("/api/me"),
+  openCase: (caseId: string, betId: string) => request<CaseResult>(`/api/cases/${encodeURIComponent(caseId)}/open`, { method: "POST", body: JSON.stringify({betId}) }),
+  sellGift: (id: number) => request<{credited:number; inventory:InventoryItem[]}>(`/api/inventory/${id}/sell`, {method:"POST"}),
+  withdrawGift: (id: number) => request<{requestId:number; inventory:InventoryItem[]}>(`/api/inventory/${id}/withdraw`, {method:"POST"}),
+  adminPlayer: (q: string) => request<{players:AdminPlayer[]}>(`/api/admin/player?q=${encodeURIComponent(q)}`),
+  adminWithdrawals: () => request<{requests:Withdrawal[]}>("/api/admin/withdrawals"),
+  adminReview: (id:number, action:"reject"|"fulfilled") => request<{status:string}>(`/api/admin/withdrawals/${id}/review`,{method:"POST",body:JSON.stringify({action})}),
   addGallery: (giftId: string) => request<{ gallery: string[] }>("/api/gallery", { method: "POST", body: JSON.stringify({ giftId }) }),
   removeGallery: (giftId: string) => request<{ gallery: string[] }>(`/api/gallery/${encodeURIComponent(giftId)}`, { method: "DELETE" }),
   referrals: () => request<{ refCode: string; referrals: { username?: string; created_at: number }[] }>("/api/referrals"),

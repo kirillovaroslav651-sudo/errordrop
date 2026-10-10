@@ -15,6 +15,10 @@ import {
   claimDailyBonus,
   moscowDay,
   getGiftGallery,
+  getInventory,
+  openPaidCase,
+  sellInventoryGift,
+  requestGiftWithdrawal,
   PACKAGES,
 } from "./db";
 import giftCatalog from "./giftCatalog.json";
@@ -40,7 +44,7 @@ router.get("/me", requireAuth, async (req: any, res: Response) => {
 
   const user = await ensureUser(u.id, u.username, refId && refId !== u.id ? refId : null);
   const tx = await getTransactions(u.id, 25);
-  const [rc, drb, gallery] = await Promise.all([countReferrals(u.id), dailyBonusReady(u.id), getGiftGallery(u.id)]);
+  const [rc, drb, gallery, inventory] = await Promise.all([countReferrals(u.id), dailyBonusReady(u.id), getGiftGallery(u.id), getInventory(u.id)]);
 
   res.json({
     ok: true,
@@ -56,6 +60,7 @@ router.get("/me", requireAuth, async (req: any, res: Response) => {
       },
       transactions: tx,
       gallery,
+      inventory,
     },
   });
 });
@@ -87,6 +92,86 @@ router.post("/gallery", requireAuth, async (req: any, res: Response) => {
 router.delete("/gallery/:giftId", requireAuth, async (req: any, res: Response) => {
   await db.query(`DELETE FROM gift_gallery WHERE user_id = $1 AND gift_id = $2`, [req.auth.user.id, req.params.giftId]);
   res.json({ ok: true, data: { gallery: await getGiftGallery(req.auth.user.id) } });
+});
+
+router.post("/cases/:caseId/open", requireAuth, async (req: any, res: Response) => {
+  const userId = req.auth.user.id;
+  const caseId = req.params.caseId;
+  const betId = req.body.betId;
+  if (typeof betId !== "string" || !/^[a-zA-Z0-9_-]{8,80}$/.test(betId))
+    return res.status(400).json({ ok: false, error: "invalid_bet_id" });
+  if (caseId === "daily") {
+    try {
+      const result = await claimDailyBonus(userId, 5);
+      if (!result.granted) return res.status(409).json({ ok: false, error: "daily_already_claimed" });
+      const user = await getUser(userId);
+      return res.json({ ok: true, data: { caseId, price: 0, reward: { type: "stars", stars: 5 }, balance: Number(user.balance) } });
+    } catch (e) { console.error("daily case failed",e); return res.status(500).json({ ok:false,error:"case_failed" }); }
+  }
+  try {
+    const result = await openPaidCase(userId, caseId, betId);
+    return res.json({ ok: true, data: result });
+  } catch (e: any) {
+    const code = e?.message;
+    if (["invalid_case","insufficient_balance","duplicate_bet_id"].includes(code))
+      return res.status(code === "duplicate_bet_id" ? 409 : 400).json({ ok:false,error:code });
+    console.error("case opening failed",e);
+    return res.status(500).json({ ok:false,error:"case_failed" });
+  }
+});
+
+router.post("/inventory/:id/sell", requireAuth, async (req: any, res: Response) => {
+  const id = toInt(req.params.id);
+  if (!id) return res.status(400).json({ok:false,error:"invalid_item"});
+  try { const credited = await sellInventoryGift(req.auth.user.id,id);
+    return res.json({ok:true,data:{credited,inventory:await getInventory(req.auth.user.id)}});
+  } catch(e:any) { return res.status(e?.message === "gift_not_available" ? 409 : 500).json({ok:false,error:e?.message === "gift_not_available" ? e.message : "sale_failed"}); }
+});
+
+router.post("/inventory/:id/withdraw", requireAuth, async (req: any, res: Response) => {
+  const id = toInt(req.params.id);
+  if (!id) return res.status(400).json({ok:false,error:"invalid_item"});
+  try { const requestId = await requestGiftWithdrawal(req.auth.user.id,id);
+    return res.json({ok:true,data:{requestId,inventory:await getInventory(req.auth.user.id)}});
+  } catch(e:any) { return res.status(e?.message === "gift_not_available" ? 409 : 500).json({ok:false,error:e?.message === "gift_not_available" ? e.message : "withdraw_failed"}); }
+});
+
+router.get("/admin/player", requireAuth, async (req: any, res: Response) => {
+  if (!isAdmin(req.auth.user.id)) return res.status(403).json({ok:false,error:"forbidden"});
+  const search = typeof req.query.q === "string" ? req.query.q.trim().replace(/^@/,"") : "";
+  if (!/^[a-zA-Z0-9_]{5,32}$/.test(search) && !/^\d{1,16}$/.test(search))
+    return res.status(400).json({ok:false,error:"invalid_search"});
+  const found = await db.query(`SELECT telegram_id,username,balance FROM users
+    WHERE lower(username)=lower($1) OR telegram_id::text=$1 ORDER BY created_at DESC LIMIT 5`,[search]);
+  const players = await Promise.all(found.rows.map(async u => ({ telegramId:Number(u.telegram_id),username:u.username,
+    balance:Number(u.balance), inventory:await getInventory(Number(u.telegram_id)) })));
+  res.json({ok:true,data:{players}});
+});
+
+router.get("/admin/withdrawals", requireAuth, async (req: any, res: Response) => {
+  if (!isAdmin(req.auth.user.id)) return res.status(403).json({ok:false,error:"forbidden"});
+  const r = await db.query(`SELECT w.id,w.inventory_id AS "inventoryId",w.user_id AS "userId",
+    w.status,i.gift_id AS "giftId",u.username,extract(epoch from w.created_at)::int AS "createdAt"
+    FROM gift_withdrawals w JOIN gift_inventory i ON i.id=w.inventory_id
+    JOIN users u ON u.telegram_id=w.user_id ORDER BY w.id DESC LIMIT 100`);
+  res.json({ok:true,data:{requests:r.rows}});
+});
+
+router.post("/admin/withdrawals/:id/review", requireAuth, async (req: any, res: Response) => {
+  if (!isAdmin(req.auth.user.id)) return res.status(403).json({ok:false,error:"forbidden"});
+  const id = toInt(req.params.id), action = req.body.action;
+  if (!id || !["reject","fulfilled"].includes(action)) return res.status(400).json({ok:false,error:"invalid_request"});
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+    const r = await client.query(`SELECT * FROM gift_withdrawals WHERE id=$1 FOR UPDATE`,[id]);
+    if (!r.rows[0] || r.rows[0].status !== "pending") { await client.query("ROLLBACK"); return res.status(409).json({ok:false,error:"request_not_pending"}); }
+    await client.query(`UPDATE gift_withdrawals SET status=$1,reviewed_at=now() WHERE id=$2`,[action,id]);
+    await client.query(`UPDATE gift_inventory SET status=$1,updated_at=now() WHERE id=$2`,[action === "reject" ? "owned" : "withdrawn",r.rows[0].inventory_id]);
+    await client.query("COMMIT");
+    return res.json({ok:true,data:{status:action}});
+  } catch(e) { await client.query("ROLLBACK"); console.error("review failed",e); return res.status(500).json({ok:false,error:"review_failed"}); }
+  finally { client.release(); }
 });
 
 /** Проверить, доступен ли ежедневный бонус сегодня. */
@@ -130,8 +215,7 @@ router.post("/admin/credit", requireAuth, async (req: any, res: Response) => {
 /** POST /api/daily-bonus — бесплатные звёзды раз в сутки. */
 router.post("/daily-bonus", requireAuth, async (req: any, res: Response) => {
   const id = req.auth.user.id;
-  const DAILY_BONUS = parseInt(process.env.DAILY_BONUS ?? "5", 10);
-  const { granted, bonus } = await claimDailyBonus(id, DAILY_BONUS);
+  const { granted, bonus } = await claimDailyBonus(id, 5);
   const u = await getUser(id);
   const balance = Number(u?.balance ?? 0);
   res.json({ ok: true, data: { granted, bonus, balance } });
@@ -163,7 +247,7 @@ router.post("/bet", requireAuth, async (req: any, res: Response) => {
   const game = (req.body.game as string) ?? "roulette";
   const choice = (req.body.choice as string) ?? undefined;
 
-  const VALID_GAMES = ["roulette", "coin", "case"];
+  const VALID_GAMES = ["roulette", "coin"];
   if (!VALID_GAMES.includes(game))
     return res.status(400).json({ ok: false, error: "invalid_game" });
 

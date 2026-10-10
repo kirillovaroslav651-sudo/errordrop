@@ -7,6 +7,9 @@ const TYPE_LABEL: Record<Tx["type"], string> = {
   referral_bonus: "🤝 Реферал",
   admin_credit: "🪄 Бонус админа",
   daily_bonus: "🎁 Дневной бонус",
+  case_open: "📦 Открытие кейса",
+  case_reward: "⭐ Приз кейса",
+  gift_sale: "🎁 Продажа подарка",
 };
 
 const GAME_LABEL: Record<string, string> = {
@@ -33,7 +36,7 @@ export default function History({ transactions }: { transactions: Tx[] }) {
     return (
       <section>
         <div className="section-title">История</div>
-        <div style={{ color: "var(--text-dim)", fontSize: 14 }}>Пока пусто. Сделай первую ставку!</div>
+        <div style={{ color: "var(--text-dim)", fontSize: 14 }}>Пока пусто. Открой первый кейс!</div>
       </section>
     );
   }

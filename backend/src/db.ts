@@ -1,5 +1,8 @@
 import { Pool } from "pg";
 import crypto from "crypto";
+import giftCatalog from "./giftCatalog.json";
+import caseConfig from "./caseConfig.json";
+import { giftStarValue, giftTier } from "./pricing";
 
 // Единый пул подключений к Postgres.
 // Строка подключения берётся из DATABASE_URL (её даст Supabase).
@@ -39,7 +42,12 @@ export type TxType =
   | "bet_lose"
   | "referral_bonus"
   | "admin_credit"
-  | "daily_bonus";
+  | "daily_bonus" | "case_open" | "case_reward" | "gift_sale";
+
+export type CaseReward = { type: "stars" | "gift"; stars: number; giftId?: string; inventoryId?: number; value?: number };
+export type CaseOpenResult = { caseId: string; price: number; reward: CaseReward; balance: number };
+const playableGifts = giftCatalog.map(g => ({ ...g, value: giftStarValue(g.price, g.currency) }))
+  .filter((g): g is typeof g & { value: number } => g.value !== null);
 
 /** Инициализация схемы (idempotent). */
 export async function initDb() {
@@ -89,6 +97,37 @@ export async function initDb() {
         added_at TIMESTAMPTZ NOT NULL DEFAULT now(),
         PRIMARY KEY (user_id, gift_id)
       );
+      CREATE TABLE IF NOT EXISTS gift_inventory (
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL REFERENCES users(telegram_id),
+        gift_id TEXT NOT NULL,
+        case_id TEXT NOT NULL,
+        display_value INTEGER NOT NULL,
+        sell_value INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'owned',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_inventory_user ON gift_inventory(user_id, id DESC);
+      CREATE TABLE IF NOT EXISTS case_spins (
+        bet_id TEXT PRIMARY KEY,
+        user_id BIGINT NOT NULL REFERENCES users(telegram_id),
+        case_id TEXT NOT NULL,
+        price INTEGER NOT NULL,
+        reward_type TEXT NOT NULL,
+        stars INTEGER NOT NULL DEFAULT 0,
+        gift_id TEXT,
+        inventory_id BIGINT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS gift_withdrawals (
+        id BIGSERIAL PRIMARY KEY,
+        inventory_id BIGINT NOT NULL UNIQUE REFERENCES gift_inventory(id),
+        user_id BIGINT NOT NULL REFERENCES users(telegram_id),
+        status TEXT NOT NULL DEFAULT 'pending',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        reviewed_at TIMESTAMPTZ
+      );
     `);
 
     // ref_code для всех, у кого его нет
@@ -128,7 +167,13 @@ export async function ensureUser(
   referredBy: number | null = null
 ): Promise<any> {
   const existing = await getRawUser(telegramId);
-  if (existing) return existing;
+  if (existing) {
+    if (username && existing.username !== username) {
+      const updated = await pool.query(`UPDATE users SET username=$1 WHERE telegram_id=$2 RETURNING *`, [username, telegramId]);
+      return updated.rows[0];
+    }
+    return existing;
+  }
 
   await pool.query(
     `INSERT INTO users (telegram_id, username, ref_code, referred_by)
@@ -215,6 +260,93 @@ export async function getGiftGallery(telegramId: number): Promise<string[]> {
     `SELECT gift_id FROM gift_gallery WHERE user_id = $1 ORDER BY added_at DESC LIMIT 24`, [telegramId]
   );
   return r.rows.map(row => row.gift_id);
+}
+
+export async function getInventory(userId: number) {
+  const r = await pool.query(`SELECT i.id, i.gift_id AS "giftId", i.case_id AS "caseId",
+    i.display_value AS "value", i.sell_value AS "sellValue", i.status,
+    extract(epoch from i.created_at)::int AS "createdAt"
+    FROM gift_inventory i WHERE i.user_id=$1 ORDER BY i.id DESC LIMIT 200`, [userId]);
+  return r.rows;
+}
+
+/** All paid-case outcomes are decided and persisted server-side in one transaction. */
+export async function openPaidCase(userId: number, caseId: string, betId: string): Promise<CaseOpenResult> {
+  const c = caseConfig.find(c => c.id === caseId && c.price > 0);
+  if (!c) throw new Error("invalid_case");
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const user = await client.query(`SELECT balance FROM users WHERE telegram_id=$1 FOR UPDATE`, [userId]);
+    if (!user.rows[0]) throw new Error("user_not_found");
+    const old = await client.query(`SELECT * FROM case_spins WHERE bet_id=$1`, [betId]);
+    if (old.rows[0]) {
+      const spin = old.rows[0];
+      if (Number(spin.user_id) !== userId || spin.case_id !== caseId) throw new Error("duplicate_bet_id");
+      await client.query("COMMIT");
+      return { caseId, price: c.price, reward: { type: spin.reward_type, stars: spin.stars,
+        giftId: spin.gift_id ?? undefined, inventoryId: spin.inventory_id ? Number(spin.inventory_id) : undefined },
+        balance: Number(user.rows[0].balance) };
+    }
+    if (Number(user.rows[0].balance) < c.price) throw new Error("insufficient_balance");
+    const roll = crypto.randomInt(10000);
+    const giftRoll = roll < c.giftChance * 100;
+    let reward: CaseReward;
+    if (giftRoll) {
+      const poolForCase = playableGifts.filter(g => giftTier(g.value) === Number(c.code));
+      const g = poolForCase[crypto.randomInt(poolForCase.length)];
+      const sellValue = Math.max(1, Math.round(g.value * 0.1));
+      const inv = await client.query(`INSERT INTO gift_inventory(user_id,gift_id,case_id,display_value,sell_value)
+        VALUES($1,$2,$3,$4,$5) RETURNING id`, [userId,g.id,caseId,g.value,sellValue]);
+      reward = { type: "gift", stars: 0, giftId: g.id, inventoryId: Number(inv.rows[0].id), value: g.value };
+    } else {
+      // 75% of all openings: 10–55% of the case price; remaining star outcomes: 56–95%.
+      const lowBand = roll < 7500;
+      const pct = lowBand ? crypto.randomInt(10,56) : crypto.randomInt(56,96);
+      reward = { type: "stars", stars: Math.max(1, Math.floor(c.price * pct / 100)) };
+    }
+    const balance = Number(user.rows[0].balance) - c.price + reward.stars;
+    await client.query(`UPDATE users SET balance=$1 WHERE telegram_id=$2`, [balance,userId]);
+    await client.query(`INSERT INTO transactions(user_id,type,amount,bet_id,game,choice)
+      VALUES($1,'case_open',$2,$3,'case',$4)`, [userId,-c.price,betId,caseId]);
+    if (reward.stars) await client.query(`INSERT INTO transactions(user_id,type,amount,game,choice)
+      VALUES($1,'case_reward',$2,'case',$3)`, [userId,reward.stars,caseId]);
+    await client.query(`INSERT INTO case_spins(bet_id,user_id,case_id,price,reward_type,stars,gift_id,inventory_id)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, [betId,userId,caseId,c.price,reward.type,reward.stars,reward.giftId??null,reward.inventoryId??null]);
+    await client.query("COMMIT");
+    return { caseId, price: c.price, reward, balance };
+  } catch(e) { await client.query("ROLLBACK"); throw e; }
+  finally { client.release(); }
+}
+
+export async function sellInventoryGift(userId: number, inventoryId: number) {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const item = await client.query(`SELECT * FROM gift_inventory WHERE id=$1 AND user_id=$2 FOR UPDATE`,[inventoryId,userId]);
+    if (!item.rows[0] || item.rows[0].status !== "owned") throw new Error("gift_not_available");
+    const value = Number(item.rows[0].sell_value);
+    await client.query(`UPDATE gift_inventory SET status='sold',updated_at=now() WHERE id=$1`,[inventoryId]);
+    await client.query(`UPDATE users SET balance=balance+$1 WHERE telegram_id=$2`,[value,userId]);
+    await client.query(`INSERT INTO transactions(user_id,type,amount,ref) VALUES($1,'gift_sale',$2,$3)`,[userId,value,`gift-sale:${inventoryId}`]);
+    await client.query("COMMIT");
+    return value;
+  } catch(e) { await client.query("ROLLBACK"); throw e; }
+  finally { client.release(); }
+}
+
+export async function requestGiftWithdrawal(userId: number, inventoryId: number) {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const item = await client.query(`SELECT * FROM gift_inventory WHERE id=$1 AND user_id=$2 FOR UPDATE`,[inventoryId,userId]);
+    if (!item.rows[0] || item.rows[0].status !== "owned") throw new Error("gift_not_available");
+    const result = await client.query(`INSERT INTO gift_withdrawals(inventory_id,user_id) VALUES($1,$2) RETURNING id`,[inventoryId,userId]);
+    await client.query(`UPDATE gift_inventory SET status='pending',updated_at=now() WHERE id=$1`,[inventoryId]);
+    await client.query("COMMIT");
+    return Number(result.rows[0].id);
+  } catch(e) { await client.query("ROLLBACK"); throw e; }
+  finally { client.release(); }
 }
 
 /** Резолвер исхода игры. */
