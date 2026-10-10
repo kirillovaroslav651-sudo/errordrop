@@ -33,7 +33,6 @@ export default function App() {
   const [wheel,setWheel] = useState<Wheel|null>(null);
   const wheelTrack = useRef<HTMLDivElement|null>(null);
   const wheelWindow = useRef<HTMLDivElement|null>(null);
-  const [prizesOpen,setPrizesOpen] = useState(false);
   const [settingsOpen,setSettingsOpen] = useState(false);
   const [buyOpen,setBuyOpen] = useState(false);
   const [haptics,setHaptics] = useState(localStorage.getItem("ed-haptics")!=="off");
@@ -49,7 +48,6 @@ export default function App() {
   const user = getTgUser();
   const selected = cases[caseIndex];
   const inventory = me?.inventory || [];
-  const eligible = useMemo(()=>selected.bonusMode==="gift" ? gifts.filter(g=>{const v=starValue(g);return v!==null && v<=(selected.giftMax??Number.MAX_SAFE_INTEGER)}) : [],[selected]);
   const currentGifts = useMemo(()=>gifts.filter(g=>{
     const v=starValue(g);
     const matches=`${g.name} ${v ?? ""}`.toLowerCase().includes(query.trim().toLowerCase());
@@ -70,7 +68,7 @@ export default function App() {
   },[]);
   useEffect(()=>{void reload()},[reload]);
   useEffect(()=>{
-    const close=(e:KeyboardEvent)=>{if(e.key==="Escape"&&!opening){setSettingsOpen(false);setPrizesOpen(false);setBuyOpen(false);setWheel(null)}};
+    const close=(e:KeyboardEvent)=>{if(e.key==="Escape"&&!opening){setSettingsOpen(false);setBuyOpen(false);setWheel(null)}};
     window.addEventListener("keydown",close);return()=>window.removeEventListener("keydown",close);
   },[opening]);
   const navigate=(next:Tab)=>{feel();setTab(next);window.scrollTo({top:0,behavior:lessMotion?"instant":"smooth"})};
@@ -182,14 +180,13 @@ export default function App() {
     <div className="wallet-bar"><div className="avatar">{(user?.first_name||user?.username||"E")[0].toUpperCase()}</div><div className="wallet-person"><b>{user?.first_name||user?.username||"Игрок"}</b><small>ID {me.user.telegramId}</small></div><div className="wallet-balance"><b>{me.user.balance.toLocaleString("ru-RU")}</b><span>⭐</span></div><button className="wallet-plus" onClick={()=>{feel();setBuyOpen(true)}} aria-label="Пополнить баланс">+</button></div>
     <main className="screen" key={tab}>
       {tab==="cases"&&<><div className="screen-kicker"><span className="red-line"/> ERRORDROP / CASE ROOM <span className="season">СЕЗОН 01</span></div><h1 className="main-title">ТВОЙ ДРОП.<br/><em>ТВОИ ПРАВИЛА.</em></h1>
-        <div className="live-heading"><span className="live-pill"><i/>GIFTS</span><span>ВОЗМОЖНЫЕ ПОДАРКИ</span><small>игровая витрина</small></div><div className="live-strip">{gifts.filter(g=>starValue(g)!==null).slice(0,18).map(g=><button className="live-item" key={g.id} onClick={()=>{setQuery(g.name);navigate("catalog")}}><img src={g.image} loading="lazy" alt=""/><span>{g.name}</span></button>)}</div>
         <div className="carousel-heading"><div><small>ВЫБЕРИ КЕЙС</small><b>{cases.length} <span>ДОСТУПНО</span></b></div><span className="carousel-rule"/><span className="carousel-mark">◈</span></div>
         <section className="case-grid" aria-label="Все кейсы">{cases.map((c,i)=><button key={c.id} className={`case-grid-card ${c.tone} ${i===caseIndex?"selected":""}`} onClick={()=>{feel();setCaseIndex(i)}} aria-pressed={i===caseIndex}>
           <div className="case-grid-art"><span className="case-grid-code">ED—{c.code}</span><img src={caseCover(c.cover)} alt=""/><span className="case-grid-badge">{c.price===0?"БЕСПЛАТНО":c.subtitle}</span></div>
           <div className="case-grid-info"><b>{c.name}</b><span>{c.price===0?<>★ 0 <small>1 раз в сутки</small></>:<>★ {c.price}</>}</span></div>
         </button>)}</section>
         <div className="case-meta"><span>{selected.subtitle}</span><h2>{selected.name}</h2><div><span className="gold-star">★</span> {selected.price||"БЕСПЛАТНО"} <small>{selected.price?"игровых ⭐":"1 раз в сутки"}</small></div></div>
-        <div className="case-actions"><button onClick={()=>{feel();setSettingsOpen(true)}}>⚙ <span>Настройки</span></button><button onClick={()=>{feel();setPrizesOpen(true)}}>◇ <span>Призы</span></button></div>
+        <div className="case-actions"><button onClick={()=>{feel();setSettingsOpen(true)}}>⚙ <span>Настройки</span></button></div>
         <button className="spin-cta" onClick={openCase} disabled={opening||(!selected.price&&!me.user.dailyBonusReady)}>{opening?"КРУТИМ…":selected.price?<>КРУТИТЬ ЗА <span>★ {selected.price}</span></>:me.user.dailyBonusReady?"ОТКРЫТЬ БЕСПЛАТНО →":"УЖЕ ОТКРЫТО СЕГОДНЯ"}<i>→</i></button>
         <p className="fineprint">{selected.price?`Звёзды ниже цены выпадают в ${100-selected.giftChance}% случаев. Подарок — ${selected.giftChance}%. Результат определяется сервером.`:"Только 5 игровых ⭐, один раз за московские сутки."} Реальные Telegram NFT не передаются автоматически.</p>
       </>}
@@ -205,7 +202,6 @@ export default function App() {
     <nav className="bottom-nav" aria-label="Разделы">{([ ["cases","⬡","Кейсы"],["pass","▤","Бонус"],["inventory","▣","Инвентарь"],["catalog","◈","Подарки"],["profile","♧","Профиль"],...(me.user.isAdmin?[["admin","✦","Админ"]]:[]) ] as [Tab,string,string][]).map(([id,icon,label])=><button key={id} className={tab===id?"active":""} onClick={()=>navigate(id)}><span>{icon}</span><small>{label}</small><i/></button>)}</nav>
     {error&&<div className="toast error-toast" role="alert" onClick={()=>setError("")}>{error} <span>×</span></div>}{toast&&<div className="toast" role="status" onClick={()=>setToast("")}>{toast} <span>×</span></div>}
     {settingsOpen&&<div className="modal-scrim" onClick={()=>setSettingsOpen(false)}><section className="modal-sheet" role="dialog" aria-modal="true" aria-label="Настройки" onClick={e=>e.stopPropagation()}><div className="modal-top"><small>ERRORDROP / SETTINGS</small><button onClick={()=>setSettingsOpen(false)}>×</button></div><h2>НАСТРОЙКИ</h2><label className="toggle-row">Тактильный отклик<input type="checkbox" checked={haptics} onChange={e=>{setHaptics(e.target.checked);localStorage.setItem("ed-haptics",e.target.checked?"on":"off")}}/></label><label className="toggle-row">Меньше анимаций<input type="checkbox" checked={lessMotion} onChange={e=>{setLessMotion(e.target.checked);localStorage.setItem("ed-motion",e.target.checked?"less":"full")}}/></label></section></div>}
-    {prizesOpen&&<div className="modal-scrim" onClick={()=>setPrizesOpen(false)}><section className="modal-sheet prizes-sheet" role="dialog" aria-modal="true" aria-label="Возможные призы" onClick={e=>e.stopPropagation()}><div className="modal-top"><h2>Возможные призы</h2><button onClick={()=>setPrizesOpen(false)} aria-label="Закрыть">×</button></div><div className="prize-grid prize-showcase">{selected.price===0?<div className="prize-showcase-item star-prize"><div className="prize-art"><span>★</span></div><div className="prize-value">★ 5</div></div>:<>{(selected.outcomes||[]).map(o=><div className="prize-showcase-item star-prize" key={`star-${o.stars}`}><div className="prize-art"><span>★</span></div><div className="prize-value">★ {o.stars.toLocaleString("ru-RU")}</div></div>)}{selected.bonusMode==="stars"?<div className="prize-showcase-item star-prize"><div className="prize-art bonus"><span>★</span></div><div className="prize-value">★ {selected.bonusMax?.toLocaleString("ru-RU")}</div></div>:eligible.map(g=><div className="prize-showcase-item" key={g.id}><div className="prize-art"><img src={g.image} alt=""/></div><div className="prize-value">★ {(starValue(g)??0).toLocaleString("ru-RU")}</div></div>)}</>}</div><button className="prizes-close" onClick={()=>setPrizesOpen(false)}>Закрыть</button></section></div>}
     {wheel&&<div className="wheel-overlay" role="dialog" aria-modal="true" aria-label="Рулетка кейса"><div className="wheel-header"><span>ERRORDROP / РУЛЕТКА</span><button disabled={!wheel.done} onClick={()=>setWheel(null)} aria-label="Закрыть">×</button></div><h2>{wheel.done?"ТВОЙ ДРОП!":"КРУТИМ КЕЙС…"}</h2><p>{cases.find(c=>c.id===wheel.result.caseId)?.name}</p><div className={`wheel-window ${wheel.done?"wheel-finished":""}`} ref={wheelWindow}><div className="wheel-marker"/><div className="wheel-track" ref={wheelTrack}>{wheel.items.map((item,i)=>{const g=findGift(item.giftId);return <div className={`wheel-card ${item.giftId?"wheel-gift":"wheel-stars"}`} key={i}>{g?<img src={g.image} alt=""/>:<span>★</span>}<b>{g?.name||`${item.stars} ⭐`}</b></div>})}</div></div><p className="wheel-disclaimer">Лента — визуальная анимация, а не отображение шансов. Результат определяет сервер; точные шансы — в «Призы».</p>{wheel.done&&<div className="wheel-result"><div className="result-symbol">✺</div>{wheel.result.reward.type==="gift"?<><h3>{findGift(wheel.result.reward.giftId)?.name}</h3><p>Подарок сохранён в игровом инвентаре.</p><button className="spin-cta" onClick={()=>{setWheel(null);navigate("inventory")}}>В ИНВЕНТАРЬ →</button></>:<><h3>+{wheel.result.reward.stars} игровых ⭐</h3><p>{wheel.result.price?`Цена кейса ${wheel.result.price} ⭐ · итог ${wheel.result.reward.stars-wheel.result.price} ⭐`:"Бесплатный подарок дня"}</p><button className="spin-cta" onClick={()=>setWheel(null)}>ПРОДОЛЖИТЬ →</button></>}</div>}</div>}
     {buyOpen&&<BuyModal onClose={()=>setBuyOpen(false)} onPurchased={async()=>{setBuyOpen(false);await reload()}}/>}
   </div>;
