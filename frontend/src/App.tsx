@@ -181,7 +181,7 @@ export default function App() {
       {tab==="cases"&&<><div className="screen-kicker"><span className="red-line"/> ERRORDROP / CASE ROOM <span className="season">СЕЗОН 01</span></div><h1 className="main-title">ТВОЙ ДРОП.<br/><em>ТВОИ ПРАВИЛА.</em></h1>
         <div className="carousel-heading"><div><small>ВЫБЕРИ КЕЙС</small><b>{cases.length} <span>ДОСТУПНО</span></b></div><span className="carousel-rule"/><span className="carousel-mark">◈</span></div>
         <section className="case-grid" aria-label="Все кейсы">{cases.map((c,i)=><button key={c.id} className={`case-grid-card ${c.tone} ${i===caseIndex?"selected":""}`} onClick={()=>{feel();setCaseIndex(i)}} aria-pressed={i===caseIndex}>
-          <div className="case-grid-art"><span className="case-grid-code">ED—{c.code}</span><img className="case-grid-symbol" src={`/cases/${c.id}.svg`} alt={`${c.name} icon`} /><span className="case-grid-badge">{c.price===0?"БЕСПЛАТНО":c.subtitle}</span></div>
+          <div className="case-grid-art"><span className="case-grid-code">ED—{c.code}</span><span className="case-grid-icon-wrap"><img className="case-grid-symbol" src={`/cases/${c.id}.svg`} alt={`${c.name} icon`} /></span><span className="case-grid-badge">{c.price===0?"БЕСПЛАТНО":c.subtitle}</span></div>
           <div className="case-grid-info"><b>{c.name}</b><span>{c.price===0?<>★ 0 <small>1 раз в сутки</small></>:<>★ {c.price}</>}</span></div>
         </button>)}</section>
         <div className="case-meta"><span>{selected.subtitle}</span><h2>{selected.name}</h2><div><span className="gold-star">★</span> {selected.price||"БЕСПЛАТНО"} <small>{selected.price?"игровых ⭐":"1 раз в сутки"}</small></div></div>
