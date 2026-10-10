@@ -32,6 +32,7 @@ export type MeData = {
     dailyBonusReady: boolean;
   };
   transactions: Tx[];
+  gallery: string[];
 };
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -52,6 +53,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   me: () => request<MeData>("/api/me"),
+  addGallery: (giftId: string) => request<{ gallery: string[] }>("/api/gallery", { method: "POST", body: JSON.stringify({ giftId }) }),
+  removeGallery: (giftId: string) => request<{ gallery: string[] }>(`/api/gallery/${encodeURIComponent(giftId)}`, { method: "DELETE" }),
   referrals: () => request<{ refCode: string; referrals: { username?: string; created_at: number }[] }>("/api/referrals"),
   invoice: (packageId: string) =>
     request<{ invoiceLink: string; payload: string }>("/api/invoice", {

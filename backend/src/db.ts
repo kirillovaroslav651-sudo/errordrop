@@ -83,6 +83,12 @@ export async function initDb() {
         user_id     BIGINT PRIMARY KEY,
         last_day    TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS gift_gallery (
+        user_id BIGINT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+        gift_id TEXT NOT NULL,
+        added_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (user_id, gift_id)
+      );
     `);
 
     // ref_code для всех, у кого его нет
@@ -203,6 +209,14 @@ export async function getTransactions(telegramId: number, limit = 20): Promise<a
   return r.rows;
 }
 
+/** Personal visual gallery; not a record of ownership of a Telegram gift. */
+export async function getGiftGallery(telegramId: number): Promise<string[]> {
+  const r = await pool.query(
+    `SELECT gift_id FROM gift_gallery WHERE user_id = $1 ORDER BY added_at DESC LIMIT 24`, [telegramId]
+  );
+  return r.rows.map(row => row.gift_id);
+}
+
 /** Резолвер исхода игры. */
 function resolveGame(
   game: string,
@@ -210,11 +224,11 @@ function resolveGame(
 ): { won: boolean; multiplier: number; label: string } {
   switch (game) {
     case "coin": {
-      const result = Math.random() < 0.5 ? "heads" : "tails";
+      const result = crypto.randomInt(2) === 0 ? "heads" : "tails";
       return { won: choice === result, multiplier: 2, label: result };
     }
     case "case": {
-      const roll = Math.random();
+      const roll = crypto.randomInt(10000) / 10000;
       let rarity: { mult: number; name: string };
       if (roll < 0.5) rarity = { mult: 1, name: "обычный" };
       else if (roll < 0.75) rarity = { mult: 2, name: "редкий" };
@@ -224,7 +238,7 @@ function resolveGame(
       return { won, multiplier: rarity.mult, label: rarity.name };
     }
     default:
-      return { won: Math.random() < 0.5, multiplier: 2, label: "" };
+      return { won: crypto.randomInt(2) === 0, multiplier: 2, label: "" };
   }
 }
 

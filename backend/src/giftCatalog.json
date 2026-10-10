@@ -1,0 +1,1512 @@
+[
+  {
+    "id": "1-may",
+    "name": "1 May",
+    "image": "/gifts/all/1-may.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/1 May.webp",
+    "url": "https://telegifter.ru/gifts/collections/1-may/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "500 000"
+  },
+  {
+    "id": "algorithm-cup",
+    "name": "Algorithm Cup",
+    "image": "/gifts/all/algorithm-cup.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Algorithm Cup.webp",
+    "url": "https://telegifter.ru/gifts/collections/algorithm-cup/",
+    "price": "~1557.75",
+    "currency": "TON",
+    "supply": "165"
+  },
+  {
+    "id": "brick",
+    "name": "Artisan Brick",
+    "image": "/gifts/all/brick.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Artisan Brick.webp",
+    "url": "https://telegifter.ru/gifts/collections/brick/",
+    "price": "~62.98",
+    "currency": "TON",
+    "supply": "6 296"
+  },
+  {
+    "id": "astral-shard",
+    "name": "Astral Shard",
+    "image": "/gifts/all/astral-shard.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Astral Shard.webp",
+    "url": "https://telegifter.ru/gifts/collections/astral-shard/",
+    "price": "~113.98",
+    "currency": "TON",
+    "supply": "5 700"
+  },
+  {
+    "id": "bday-candle",
+    "name": "B-day Candle",
+    "image": "/gifts/all/bday-candle.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/B-Day Candle.webp",
+    "url": "https://telegifter.ru/gifts/collections/bday-candle/",
+    "price": "~4.42",
+    "currency": "TON",
+    "supply": "265 913"
+  },
+  {
+    "id": "bear-terrorist",
+    "name": "Bear Terrorist",
+    "image": "/gifts/all/bear-terrorist.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Bear Terrorist.webp",
+    "url": "https://telegifter.ru/gifts/collections/bear-terrorist/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "berry-box",
+    "name": "Berry Box",
+    "image": "/gifts/all/berry-box.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Berry Box.webp",
+    "url": "https://telegifter.ru/gifts/collections/berry-box/",
+    "price": "~8.39",
+    "currency": "TON",
+    "supply": "53 353"
+  },
+  {
+    "id": "big-year",
+    "name": "Big Year",
+    "image": "/gifts/all/big-year.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Big Year.webp",
+    "url": "https://telegifter.ru/gifts/collections/big-year/",
+    "price": "~3.65",
+    "currency": "TON",
+    "supply": "78 032"
+  },
+  {
+    "id": "gold-nipples",
+    "name": "Bling Binky",
+    "image": "/gifts/all/gold-nipples.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Bling Binky.webp",
+    "url": "https://telegifter.ru/gifts/collections/gold-nipples/",
+    "price": "~25.02",
+    "currency": "TON",
+    "supply": "9 426"
+  },
+  {
+    "id": "bonded-ring",
+    "name": "Bonded Ring",
+    "image": "/gifts/all/bonded-ring.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Bonded Ring.webp",
+    "url": "https://telegifter.ru/gifts/collections/bonded-ring/",
+    "price": "~40.19",
+    "currency": "TON",
+    "supply": "7 838"
+  },
+  {
+    "id": "bow-tie",
+    "name": "Bow Tie",
+    "image": "/gifts/all/bow-tie.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Bow Tie.webp",
+    "url": "https://telegifter.ru/gifts/collections/bow-tie/",
+    "price": "~5.6",
+    "currency": "TON",
+    "supply": "56 458"
+  },
+  {
+    "id": "bunny-muffin",
+    "name": "Bunny Muffin",
+    "image": "/gifts/all/bunny-muffin.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Bunny Muffin.webp",
+    "url": "https://telegifter.ru/gifts/collections/bunny-muffin/",
+    "price": "~7.35",
+    "currency": "TON",
+    "supply": "54 430"
+  },
+  {
+    "id": "candy-cane",
+    "name": "Candy Cane",
+    "image": "/gifts/all/candy-cane.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Candy Cane.webp",
+    "url": "https://telegifter.ru/gifts/collections/candy-cane/",
+    "price": "~3.7",
+    "currency": "TON",
+    "supply": "228 850"
+  },
+  {
+    "id": "case",
+    "name": "Case",
+    "image": "/gifts/all/case.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Case.webp",
+    "url": "https://telegifter.ru/gifts/collections/case/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "25 000"
+  },
+  {
+    "id": "torch-freedom",
+    "name": "Chill Flame",
+    "image": "/gifts/all/torch-freedom.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Torch of Freedom.webp",
+    "url": "https://telegifter.ru/gifts/collections/torch-freedom/",
+    "price": "~3.32",
+    "currency": "TON",
+    "supply": "436 049"
+  },
+  {
+    "id": "christmas-tree",
+    "name": "Christmas Tree",
+    "image": "/gifts/all/christmas-tree.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Christmas Tree.webp",
+    "url": "https://telegifter.ru/gifts/collections/christmas-tree/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "clover",
+    "name": "Clover Pin",
+    "image": "/gifts/all/clover.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Clover Pin.webp",
+    "url": "https://telegifter.ru/gifts/collections/clover/",
+    "price": "~4.49",
+    "currency": "TON",
+    "supply": "186 480"
+  },
+  {
+    "id": "bear-clown",
+    "name": "Clown Bear",
+    "image": "/gifts/all/bear-clown.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Clown Bear.webp",
+    "url": "https://telegifter.ru/gifts/collections/bear-clown/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "coconut",
+    "name": "Coconut",
+    "image": "/gifts/all/coconut.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Coconut.webp",
+    "url": "https://telegifter.ru/gifts/collections/coconut/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "500 000"
+  },
+  {
+    "id": "coffin",
+    "name": "Coffin",
+    "image": "/gifts/all/coffin.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Coffin.webp",
+    "url": "https://telegifter.ru/gifts/collections/coffin/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "40 000"
+  },
+  {
+    "id": "cookie-heart",
+    "name": "Cookie Heart",
+    "image": "/gifts/all/cookie-heart.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Cookie Heart.webp",
+    "url": "https://telegifter.ru/gifts/collections/cookie-heart/",
+    "price": "~4.67",
+    "currency": "TON",
+    "supply": "199 825"
+  },
+  {
+    "id": "crystal-ball",
+    "name": "Crystal Ball",
+    "image": "/gifts/all/crystal-ball.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Crystal Ball.webp",
+    "url": "https://telegifter.ru/gifts/collections/crystal-ball/",
+    "price": "~11.96",
+    "currency": "TON",
+    "supply": "26 779"
+  },
+  {
+    "id": "cupid-charm",
+    "name": "Cupid Charm",
+    "image": "/gifts/all/cupid-charm.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Cupid Charm.webp",
+    "url": "https://telegifter.ru/gifts/collections/cupid-charm/",
+    "price": "~21.8",
+    "currency": "TON",
+    "supply": "30 373"
+  },
+  {
+    "id": "desk-calendar",
+    "name": "Desk Calendar",
+    "image": "/gifts/all/desk-calendar.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Desk Calendar.webp",
+    "url": "https://telegifter.ru/gifts/collections/desk-calendar/",
+    "price": "~4.59",
+    "currency": "TON",
+    "supply": "341 311"
+  },
+  {
+    "id": "diamond-ring",
+    "name": "Diamond Ring",
+    "image": "/gifts/all/diamond-ring.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Diamond Ring.webp",
+    "url": "https://telegifter.ru/gifts/collections/diamond-ring/",
+    "price": "~28.14",
+    "currency": "TON",
+    "supply": "32 275"
+  },
+  {
+    "id": "dove-peace",
+    "name": "Dove of Peace",
+    "image": "/gifts/all/dove-peace.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Dove of Peace.webp",
+    "url": "https://telegifter.ru/gifts/collections/dove-peace/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "250 000"
+  },
+  {
+    "id": "durovs-boots",
+    "name": "Durov's Boots",
+    "image": "/gifts/all/durovs-boots.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Durovs Boots.webp",
+    "url": "https://telegifter.ru/gifts/collections/durovs-boots/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "10 000"
+  },
+  {
+    "id": "durovs-cap",
+    "name": "Durov's Cap",
+    "image": "/gifts/all/durovs-cap.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Durovs Cap.webp",
+    "url": "https://telegifter.ru/gifts/collections/durovs-cap/",
+    "price": "~389.44",
+    "currency": "TON",
+    "supply": "4 710"
+  },
+  {
+    "id": "durovs-coat",
+    "name": "Durov's Coat",
+    "image": "/gifts/all/durovs-coat.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Durovs Coat.webp",
+    "url": "https://telegifter.ru/gifts/collections/durovs-coat/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "10 000"
+  },
+  {
+    "id": "durovs-figurine",
+    "name": "Durov's Figurine",
+    "image": "/gifts/all/durovs-figurine.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Durovs Figurine.webp",
+    "url": "https://telegifter.ru/gifts/collections/durovs-figurine/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "4 100"
+  },
+  {
+    "id": "durovs-sunglasses",
+    "name": "Durovs Glasses",
+    "image": "/gifts/all/durovs-sunglasses.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Durov's Sunglasses.webp",
+    "url": "https://telegifter.ru/gifts/collections/durovs-sunglasses/",
+    "price": "~93.5",
+    "currency": "TON",
+    "supply": "3 779"
+  },
+  {
+    "id": "easter-bear",
+    "name": "Easter Bear",
+    "image": "/gifts/all/easter-bear.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Easter Bear.webp",
+    "url": "https://telegifter.ru/gifts/collections/easter-bear/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "easter-cake",
+    "name": "Easter Cake",
+    "image": "/gifts/all/easter-cake.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Easter Cake.webp",
+    "url": "https://telegifter.ru/gifts/collections/easter-cake/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "500 000"
+  },
+  {
+    "id": "easter-egg",
+    "name": "Easter Egg",
+    "image": "/gifts/all/easter-egg.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Easter Egg.webp",
+    "url": "https://telegifter.ru/gifts/collections/easter-egg/",
+    "price": "~3.79",
+    "currency": "TON",
+    "supply": "163 829"
+  },
+  {
+    "id": "electric-skull",
+    "name": "Electric Skull",
+    "image": "/gifts/all/electric-skull.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Electric Skull.webp",
+    "url": "https://telegifter.ru/gifts/collections/electric-skull/",
+    "price": "~26.49",
+    "currency": "TON",
+    "supply": "9 234"
+  },
+  {
+    "id": "eternal-candle",
+    "name": "Eternal Candle",
+    "image": "/gifts/all/eternal-candle.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Eternal Candle.webp",
+    "url": "https://telegifter.ru/gifts/collections/eternal-candle/",
+    "price": "~5.23",
+    "currency": "TON",
+    "supply": "45 174"
+  },
+  {
+    "id": "eternal-rose",
+    "name": "Eternal Rose",
+    "image": "/gifts/all/eternal-rose.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Eternal Rose.webp",
+    "url": "https://telegifter.ru/gifts/collections/eternal-rose/",
+    "price": "~23.92",
+    "currency": "TON",
+    "supply": "32 044"
+  },
+  {
+    "id": "evil-eye",
+    "name": "Evil Eye",
+    "image": "/gifts/all/evil-eye.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Evil Eye.webp",
+    "url": "https://telegifter.ru/gifts/collections/evil-eye/",
+    "price": "~7.34",
+    "currency": "TON",
+    "supply": "74 590"
+  },
+  {
+    "id": "mosque",
+    "name": "Faith Amulet",
+    "image": "/gifts/all/mosque.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Faith Amulet.webp",
+    "url": "https://telegifter.ru/gifts/collections/mosque/",
+    "price": "~4.77",
+    "currency": "TON",
+    "supply": "142 045"
+  },
+  {
+    "id": "pen",
+    "name": "Fine Pen",
+    "image": "/gifts/all/pen.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Pen.webp",
+    "url": "https://telegifter.ru/gifts/collections/pen/",
+    "price": "~8.24",
+    "currency": "TON",
+    "supply": "37 207"
+  },
+  {
+    "id": "flying-broom",
+    "name": "Flying Broom",
+    "image": "/gifts/all/flying-broom.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Flying Broom.webp",
+    "url": "https://telegifter.ru/gifts/collections/flying-broom/",
+    "price": "~11.96",
+    "currency": "TON",
+    "supply": "24 851"
+  },
+  {
+    "id": "football-bear",
+    "name": "Football Bear",
+    "image": "/gifts/all/football-bear.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Football Bear.webp",
+    "url": "https://telegifter.ru/gifts/collections/football-bear/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "socks",
+    "name": "Fresh Socks",
+    "image": "/gifts/all/socks.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Fresh Socks.webp",
+    "url": "https://telegifter.ru/gifts/collections/socks/",
+    "price": "~4.02",
+    "currency": "TON",
+    "supply": "165 028"
+  },
+  {
+    "id": "gem-signet",
+    "name": "Gem Signet",
+    "image": "/gifts/all/gem-signet.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Gem Signet.webp",
+    "url": "https://telegifter.ru/gifts/collections/gem-signet/",
+    "price": "~56.28",
+    "currency": "TON",
+    "supply": "6 256"
+  },
+  {
+    "id": "genie-lamp",
+    "name": "Genie Lamp",
+    "image": "/gifts/all/genie-lamp.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Genie Lamp.webp",
+    "url": "https://telegifter.ru/gifts/collections/genie-lamp/",
+    "price": "~32.69",
+    "currency": "TON",
+    "supply": "6 600"
+  },
+  {
+    "id": "ginger-cookie",
+    "name": "Ginger Cookie",
+    "image": "/gifts/all/ginger-cookie.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Ginger Cookie.webp",
+    "url": "https://telegifter.ru/gifts/collections/ginger-cookie/",
+    "price": "~3.92",
+    "currency": "TON",
+    "supply": "151 488"
+  },
+  {
+    "id": "gravestone",
+    "name": "Gravestone",
+    "image": "/gifts/all/gravestone.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Gravestone.webp",
+    "url": "https://telegifter.ru/gifts/collections/gravestone/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "10 000"
+  },
+  {
+    "id": "hanging-star",
+    "name": "Hanging Star",
+    "image": "/gifts/all/hanging-star.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Hanging Star.webp",
+    "url": "https://telegifter.ru/gifts/collections/hanging-star/",
+    "price": "~9.1",
+    "currency": "TON",
+    "supply": "47 356"
+  },
+  {
+    "id": "poop",
+    "name": "Happy Brownie",
+    "image": "/gifts/all/poop.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Happy Brownie.webp",
+    "url": "https://telegifter.ru/gifts/collections/poop/",
+    "price": "~3.7",
+    "currency": "TON",
+    "supply": "226 818"
+  },
+  {
+    "id": "heart-locket",
+    "name": "Heart Locket",
+    "image": "/gifts/all/heart-locket.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Heart Locket.webp",
+    "url": "https://telegifter.ru/gifts/collections/heart-locket/",
+    "price": "~1246.2",
+    "currency": "TON",
+    "supply": "1 951"
+  },
+  {
+    "id": "heroic-helmet",
+    "name": "Heroic Helmet",
+    "image": "/gifts/all/heroic-helmet.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Heroic Helmet.webp",
+    "url": "https://telegifter.ru/gifts/collections/heroic-helmet/",
+    "price": "~175.88",
+    "currency": "TON",
+    "supply": "3 438"
+  },
+  {
+    "id": "hex-pot",
+    "name": "Hex Pot",
+    "image": "/gifts/all/hex-pot.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Hex Pot.webp",
+    "url": "https://telegifter.ru/gifts/collections/hex-pot/",
+    "price": "~4.44",
+    "currency": "TON",
+    "supply": "56 953"
+  },
+  {
+    "id": "holiday-drink",
+    "name": "Holiday Drink",
+    "image": "/gifts/all/holiday-drink.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Holiday Drink.webp",
+    "url": "https://telegifter.ru/gifts/collections/holiday-drink/",
+    "price": "~3.89",
+    "currency": "TON",
+    "supply": "89 944"
+  },
+  {
+    "id": "homemade-cake",
+    "name": "Homemade Cake",
+    "image": "/gifts/all/homemade-cake.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Homemade Cake.webp",
+    "url": "https://telegifter.ru/gifts/collections/homemade-cake/",
+    "price": "~4.52",
+    "currency": "TON",
+    "supply": "180 380"
+  },
+  {
+    "id": "hypno-lollipop",
+    "name": "Hypno Lollipop",
+    "image": "/gifts/all/hypno-lollipop.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Hypno Lollipop.webp",
+    "url": "https://telegifter.ru/gifts/collections/hypno-lollipop/",
+    "price": "~3.91",
+    "currency": "TON",
+    "supply": "84 044"
+  },
+  {
+    "id": "i-love-you",
+    "name": "I love you",
+    "image": "/gifts/all/i-love-you.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/I love you.webp",
+    "url": "https://telegifter.ru/gifts/collections/i-love-you/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "ice-cream-bar",
+    "name": "Ice Cream",
+    "image": "/gifts/all/ice-cream-bar.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Ice Cream.webp",
+    "url": "https://telegifter.ru/gifts/collections/ice-cream-bar/",
+    "price": "~3.43",
+    "currency": "TON",
+    "supply": "328 618"
+  },
+  {
+    "id": "ice-cream-scoops",
+    "name": "Ice Cream Scoops",
+    "image": "/gifts/all/ice-cream-scoops.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Ice Cream Scoops.webp",
+    "url": "https://telegifter.ru/gifts/collections/ice-cream-scoops/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "250 000"
+  },
+  {
+    "id": "heart-button",
+    "name": "Input Key",
+    "image": "/gifts/all/heart-button.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Input Key.webp",
+    "url": "https://telegifter.ru/gifts/collections/heart-button/",
+    "price": "~5.7",
+    "currency": "TON",
+    "supply": "135 038"
+  },
+  {
+    "id": "instant-noodles",
+    "name": "Instant Ramen",
+    "image": "/gifts/all/instant-noodles.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Instant Ramen.webp",
+    "url": "https://telegifter.ru/gifts/collections/instant-noodles/",
+    "price": "~3.41",
+    "currency": "TON",
+    "supply": "389 742"
+  },
+  {
+    "id": "intelligence-cup",
+    "name": "Intelligence Cup",
+    "image": "/gifts/all/intelligence-cup.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Intelligence Cup.webp",
+    "url": "https://telegifter.ru/gifts/collections/intelligence-cup/",
+    "price": "~1699",
+    "currency": "TON",
+    "supply": "119"
+  },
+  {
+    "id": "ion-gem",
+    "name": "Ion Gem",
+    "image": "/gifts/all/ion-gem.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Ion Gem.webp",
+    "url": "https://telegifter.ru/gifts/collections/ion-gem/",
+    "price": "~64.97",
+    "currency": "TON",
+    "supply": "4 535"
+  },
+  {
+    "id": "ionic-dryer",
+    "name": "Ionic Dryer",
+    "image": "/gifts/all/ionic-dryer.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Ionic Dryer.webp",
+    "url": "https://telegifter.ru/gifts/collections/ionic-dryer/",
+    "price": "~13.97",
+    "currency": "TON",
+    "supply": "20 821"
+  },
+  {
+    "id": "irish-bear",
+    "name": "Irish Bear",
+    "image": "/gifts/all/irish-bear.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Irish Bear.webp",
+    "url": "https://telegifter.ru/gifts/collections/irish-bear/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "jackinthebox",
+    "name": "Jack in the Box",
+    "image": "/gifts/all/jackinthebox.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Jack in the Box.webp",
+    "url": "https://telegifter.ru/gifts/collections/jackinthebox/",
+    "price": "~4.33",
+    "currency": "TON",
+    "supply": "90 691"
+  },
+  {
+    "id": "jelly-bunny",
+    "name": "Jelly Bunny",
+    "image": "/gifts/all/jelly-bunny.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Jelly Bunny.webp",
+    "url": "https://telegifter.ru/gifts/collections/jelly-bunny/",
+    "price": "~7.3",
+    "currency": "TON",
+    "supply": "108 206"
+  },
+  {
+    "id": "jester-hat",
+    "name": "Jester Hat",
+    "image": "/gifts/all/jester-hat.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Jester Hat.webp",
+    "url": "https://telegifter.ru/gifts/collections/jester-hat/",
+    "price": "~3.7",
+    "currency": "TON",
+    "supply": "143 721"
+  },
+  {
+    "id": "jingle-bells",
+    "name": "Jingle Bells",
+    "image": "/gifts/all/jingle-bells.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Jingle Bells.webp",
+    "url": "https://telegifter.ru/gifts/collections/jingle-bells/",
+    "price": "~8.64",
+    "currency": "TON",
+    "supply": "93 132"
+  },
+  {
+    "id": "jolly-chimp",
+    "name": "Jolly Chimp",
+    "image": "/gifts/all/jolly-chimp.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Jolly Chimp.webp",
+    "url": "https://telegifter.ru/gifts/collections/jolly-chimp/",
+    "price": "~6.74",
+    "currency": "TON",
+    "supply": "117 954"
+  },
+  {
+    "id": "joyful-bundle",
+    "name": "Joyful Bundle",
+    "image": "/gifts/all/joyful-bundle.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Joyful Bundle.webp",
+    "url": "https://telegifter.ru/gifts/collections/joyful-bundle/",
+    "price": "~7.1",
+    "currency": "TON",
+    "supply": "84 653"
+  },
+  {
+    "id": "papakha",
+    "name": "Khabib's Papakha",
+    "image": "/gifts/all/papakha.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Khabibs Papakha.webp",
+    "url": "https://telegifter.ru/gifts/collections/papakha/",
+    "price": "~24.02",
+    "currency": "TON",
+    "supply": "28 651"
+  },
+  {
+    "id": "kissed-frog",
+    "name": "Kissed Frog",
+    "image": "/gifts/all/kissed-frog.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Kissed Frog.webp",
+    "url": "https://telegifter.ru/gifts/collections/kissed-frog/",
+    "price": "~37.99",
+    "currency": "TON",
+    "supply": "14 087"
+  },
+  {
+    "id": "statue-of-liberty",
+    "name": "Liberty Figure",
+    "image": "/gifts/all/statue-of-liberty.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Statue of Liberty.webp",
+    "url": "https://telegifter.ru/gifts/collections/statue-of-liberty/",
+    "price": "~4.36",
+    "currency": "TON",
+    "supply": "264 023"
+  },
+  {
+    "id": "light-sword",
+    "name": "Light Sword",
+    "image": "/gifts/all/light-sword.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Light Sword.webp",
+    "url": "https://telegifter.ru/gifts/collections/light-sword/",
+    "price": "~6.2",
+    "currency": "TON",
+    "supply": "125 207"
+  },
+  {
+    "id": "lolpop",
+    "name": "Lol Pop",
+    "image": "/gifts/all/lolpop.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Lol Pop.webp",
+    "url": "https://telegifter.ru/gifts/collections/lolpop/",
+    "price": "~3.52",
+    "currency": "TON",
+    "supply": "434 644"
+  },
+  {
+    "id": "loot-bag",
+    "name": "Loot Bag",
+    "image": "/gifts/all/loot-bag.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Loot Bag.webp",
+    "url": "https://telegifter.ru/gifts/collections/loot-bag/",
+    "price": "~118.99",
+    "currency": "TON",
+    "supply": "14 432"
+  },
+  {
+    "id": "love-candle",
+    "name": "Love Candle",
+    "image": "/gifts/all/love-candle.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Love Candle.webp",
+    "url": "https://telegifter.ru/gifts/collections/love-candle/",
+    "price": "~9.55",
+    "currency": "TON",
+    "supply": "24 569"
+  },
+  {
+    "id": "love-potion",
+    "name": "Love Potion",
+    "image": "/gifts/all/love-potion.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Love Potion.webp",
+    "url": "https://telegifter.ru/gifts/collections/love-potion/",
+    "price": "~14.47",
+    "currency": "TON",
+    "supply": "29 165"
+  },
+  {
+    "id": "low-rider",
+    "name": "Low Rider",
+    "image": "/gifts/all/low-rider.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Low Rider.webp",
+    "url": "https://telegifter.ru/gifts/collections/low-rider/",
+    "price": "~55.71",
+    "currency": "TON",
+    "supply": "23 480"
+  },
+  {
+    "id": "kitty-medallion",
+    "name": "Lucky Locket",
+    "image": "/gifts/all/kitty-medallion.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Kitty Medallion.webp",
+    "url": "https://telegifter.ru/gifts/collections/kitty-medallion/",
+    "price": "~19.6",
+    "currency": "TON",
+    "supply": "19 061"
+  },
+  {
+    "id": "lunar-snake",
+    "name": "Lunar Snake",
+    "image": "/gifts/all/lunar-snake.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Lunar Snake.webp",
+    "url": "https://telegifter.ru/gifts/collections/lunar-snake/",
+    "price": "~3.4",
+    "currency": "TON",
+    "supply": "201 285"
+  },
+  {
+    "id": "lush-bouquet",
+    "name": "Lush Bouquet",
+    "image": "/gifts/all/lush-bouquet.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Lush Bouquet.webp",
+    "url": "https://telegifter.ru/gifts/collections/lush-bouquet/",
+    "price": "~5.75",
+    "currency": "TON",
+    "supply": "112 103"
+  },
+  {
+    "id": "mad-pumpkin",
+    "name": "Mad Pumpkin",
+    "image": "/gifts/all/mad-pumpkin.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Mad Pumpkin.webp",
+    "url": "https://telegifter.ru/gifts/collections/mad-pumpkin/",
+    "price": "~12.8",
+    "currency": "TON",
+    "supply": "19 781"
+  },
+  {
+    "id": "magic-potion",
+    "name": "Magic Potion",
+    "image": "/gifts/all/magic-potion.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Magic Potion.webp",
+    "url": "https://telegifter.ru/gifts/collections/magic-potion/",
+    "price": "~53.77",
+    "currency": "TON",
+    "supply": "4 871"
+  },
+  {
+    "id": "mask",
+    "name": "Mask",
+    "image": "/gifts/all/mask.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Mask.webp",
+    "url": "https://telegifter.ru/gifts/collections/mask/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "250 000"
+  },
+  {
+    "id": "may-bear",
+    "name": "May Bear",
+    "image": "/gifts/all/may-bear.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/May Bear.webp",
+    "url": "https://telegifter.ru/gifts/collections/may-bear/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "golden-biceps",
+    "name": "Mighty Arm",
+    "image": "/gifts/all/golden-biceps.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Mighty Arm.webp",
+    "url": "https://telegifter.ru/gifts/collections/golden-biceps/",
+    "price": "~124.47",
+    "currency": "TON",
+    "supply": "3 828"
+  },
+  {
+    "id": "mini-oscar",
+    "name": "Mini Oscar",
+    "image": "/gifts/all/mini-oscar.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Mini Oscar.webp",
+    "url": "https://telegifter.ru/gifts/collections/mini-oscar/",
+    "price": "~70",
+    "currency": "TON",
+    "supply": "4 893"
+  },
+  {
+    "id": "candle-lamp",
+    "name": "Mirage Lamp",
+    "image": "/gifts/all/candle-lamp.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Candle Lamp.webp",
+    "url": "https://telegifter.ru/gifts/collections/candle-lamp/",
+    "price": "~4.69",
+    "currency": "TON",
+    "supply": "68 408"
+  },
+  {
+    "id": "gold-pot",
+    "name": "Money Pot",
+    "image": "/gifts/all/gold-pot.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Money Pot.webp",
+    "url": "https://telegifter.ru/gifts/collections/gold-pot/",
+    "price": "~4.74",
+    "currency": "TON",
+    "supply": "74 423"
+  },
+  {
+    "id": "backpack",
+    "name": "Mood Pack",
+    "image": "/gifts/all/backpack.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Backpack.webp",
+    "url": "https://telegifter.ru/gifts/collections/backpack/",
+    "price": "~4.01",
+    "currency": "TON",
+    "supply": "183 501"
+  },
+  {
+    "id": "moon-pendant",
+    "name": "Moon Pendant",
+    "image": "/gifts/all/moon-pendant.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Moon Pendant.webp",
+    "url": "https://telegifter.ru/gifts/collections/moon-pendant/",
+    "price": "~5.63",
+    "currency": "TON",
+    "supply": "102 661"
+  },
+  {
+    "id": "cherry-cake",
+    "name": "Mousse Cake",
+    "image": "/gifts/all/cherry-cake.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Mousse Cake.webp",
+    "url": "https://telegifter.ru/gifts/collections/cherry-cake/",
+    "price": "~4.3",
+    "currency": "TON",
+    "supply": "179 336"
+  },
+  {
+    "id": "nail-bracelet",
+    "name": "Nail Bracelet",
+    "image": "/gifts/all/nail-bracelet.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Nail Bracelet.webp",
+    "url": "https://telegifter.ru/gifts/collections/nail-bracelet/",
+    "price": "~108.99",
+    "currency": "TON",
+    "supply": "4 694"
+  },
+  {
+    "id": "neko-helmet",
+    "name": "Neko Helmet",
+    "image": "/gifts/all/neko-helmet.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Neko Helmet.webp",
+    "url": "https://telegifter.ru/gifts/collections/neko-helmet/",
+    "price": "~34.97",
+    "currency": "TON",
+    "supply": "15 454"
+  },
+  {
+    "id": "bear-new-year",
+    "name": "New Year's Bear",
+    "image": "/gifts/all/bear-new-year.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Bear New Year.webp",
+    "url": "https://telegifter.ru/gifts/collections/bear-new-year/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "party-sparkler",
+    "name": "Party Sparkler",
+    "image": "/gifts/all/party-sparkler.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Party Sparkler.webp",
+    "url": "https://telegifter.ru/gifts/collections/party-sparkler/",
+    "price": "~4.11",
+    "currency": "TON",
+    "supply": "189 023"
+  },
+  {
+    "id": "perfume-bottle",
+    "name": "Perfume Bottle",
+    "image": "/gifts/all/perfume-bottle.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Perfume Bottle.webp",
+    "url": "https://telegifter.ru/gifts/collections/perfume-bottle/",
+    "price": "~69.8",
+    "currency": "TON",
+    "supply": "4 435"
+  },
+  {
+    "id": "pet-snake",
+    "name": "Pet Snake",
+    "image": "/gifts/all/pet-snake.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Pet Snake.webp",
+    "url": "https://telegifter.ru/gifts/collections/pet-snake/",
+    "price": "~3.67",
+    "currency": "TON",
+    "supply": "191 835"
+  },
+  {
+    "id": "pink-bear",
+    "name": "Pink Bear",
+    "image": "/gifts/all/pink-bear.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Pink Bear.webp",
+    "url": "https://telegifter.ru/gifts/collections/pink-bear/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "plush-pepe",
+    "name": "Plush Pepe",
+    "image": "/gifts/all/plush-pepe.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Plush Pepe.webp",
+    "url": "https://telegifter.ru/gifts/collections/plush-pepe/",
+    "price": "~5350",
+    "currency": "TON",
+    "supply": "2 825"
+  },
+  {
+    "id": "polar-bear",
+    "name": "Polar Bear",
+    "image": "/gifts/all/polar-bear.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Polar Bear.webp",
+    "url": "https://telegifter.ru/gifts/collections/polar-bear/",
+    "price": "50",
+    "currency": "⭐",
+    "supply": ""
+  },
+  {
+    "id": "pink-flamingo",
+    "name": "Pool Float",
+    "image": "/gifts/all/pink-flamingo.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Pink Flamingo.webp",
+    "url": "https://telegifter.ru/gifts/collections/pink-flamingo/",
+    "price": "~3.39",
+    "currency": "TON",
+    "supply": "226 936"
+  },
+  {
+    "id": "precious-peach",
+    "name": "Precious Peach",
+    "image": "/gifts/all/precious-peach.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Precious Peach.webp",
+    "url": "https://telegifter.ru/gifts/collections/precious-peach/",
+    "price": "~250",
+    "currency": "TON",
+    "supply": "3 008"
+  },
+  {
+    "id": "money-bouquet",
+    "name": "Pretty Posy",
+    "image": "/gifts/all/money-bouquet.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Pretty Posy.webp",
+    "url": "https://telegifter.ru/gifts/collections/money-bouquet/",
+    "price": "~5.03",
+    "currency": "TON",
+    "supply": "132 899"
+  },
+  {
+    "id": "crystal-eagle",
+    "name": "Rare Bird",
+    "image": "/gifts/all/crystal-eagle.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Crystal Eagle.webp",
+    "url": "https://telegifter.ru/gifts/collections/crystal-eagle/",
+    "price": "~24.92",
+    "currency": "TON",
+    "supply": "12 956"
+  },
+  {
+    "id": "record-player",
+    "name": "Record Player",
+    "image": "/gifts/all/record-player.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Record Player.webp",
+    "url": "https://telegifter.ru/gifts/collections/record-player/",
+    "price": "~11.76",
+    "currency": "TON",
+    "supply": "35 331"
+  },
+  {
+    "id": "red-star",
+    "name": "Red Star",
+    "image": "/gifts/all/red-star.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Red Star.webp",
+    "url": "https://telegifter.ru/gifts/collections/red-star/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "500 000"
+  },
+  {
+    "id": "resistance-dog",
+    "name": "Resistance Dog",
+    "image": "/gifts/all/resistance-dog.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Resistance Dog.webp",
+    "url": "https://telegifter.ru/gifts/collections/resistance-dog/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "20 000"
+  },
+  {
+    "id": "restless-jar",
+    "name": "Restless Jar",
+    "image": "/gifts/all/restless-jar.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Restless Jar.webp",
+    "url": "https://telegifter.ru/gifts/collections/restless-jar/",
+    "price": "~5.21",
+    "currency": "TON",
+    "supply": "103 263"
+  },
+  {
+    "id": "roses",
+    "name": "Roses",
+    "image": "/gifts/all/roses.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Roses.webp",
+    "url": "https://telegifter.ru/gifts/collections/roses/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "150 000"
+  },
+  {
+    "id": "sakura-flower",
+    "name": "Sakura Flower",
+    "image": "/gifts/all/sakura-flower.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Sakura Flower.webp",
+    "url": "https://telegifter.ru/gifts/collections/sakura-flower/",
+    "price": "~9.99",
+    "currency": "TON",
+    "supply": "87 982"
+  },
+  {
+    "id": "sandcastle",
+    "name": "Sandcastle",
+    "image": "/gifts/all/sandcastle.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Sandcastle.webp",
+    "url": "https://telegifter.ru/gifts/collections/sandcastle/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "150 000"
+  },
+  {
+    "id": "santa-hat",
+    "name": "Santa Hat",
+    "image": "/gifts/all/santa-hat.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Santa Hat.webp",
+    "url": "https://telegifter.ru/gifts/collections/santa-hat/",
+    "price": "~4.91",
+    "currency": "TON",
+    "supply": "71 621"
+  },
+  {
+    "id": "scared-cat",
+    "name": "Scared Cat",
+    "image": "/gifts/all/scared-cat.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Scared Cat.webp",
+    "url": "https://telegifter.ru/gifts/collections/scared-cat/",
+    "price": "~236.18",
+    "currency": "TON",
+    "supply": "19 229"
+  },
+  {
+    "id": "sharp-tongue",
+    "name": "Sharp Tongue",
+    "image": "/gifts/all/sharp-tongue.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Sharp Tongue.webp",
+    "url": "https://telegifter.ru/gifts/collections/sharp-tongue/",
+    "price": "~44.9",
+    "currency": "TON",
+    "supply": "8 144"
+  },
+  {
+    "id": "signet-ring",
+    "name": "Signet Ring",
+    "image": "/gifts/all/signet-ring.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Signet Ring.webp",
+    "url": "https://telegifter.ru/gifts/collections/signet-ring/",
+    "price": "~31.41",
+    "currency": "TON",
+    "supply": "16 968"
+  },
+  {
+    "id": "skull-flower",
+    "name": "Skull Flower",
+    "image": "/gifts/all/skull-flower.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Skull Flower.webp",
+    "url": "https://telegifter.ru/gifts/collections/skull-flower/",
+    "price": "~11.33",
+    "currency": "TON",
+    "supply": "22 036"
+  },
+  {
+    "id": "heels",
+    "name": "Sky Stilettos",
+    "image": "/gifts/all/heels.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Sky Stilettos.webp",
+    "url": "https://telegifter.ru/gifts/collections/heels/",
+    "price": "~17.89",
+    "currency": "TON",
+    "supply": "52 355"
+  },
+  {
+    "id": "sleigh-bell",
+    "name": "Sleigh Bell",
+    "image": "/gifts/all/sleigh-bell.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Sleigh Bell.webp",
+    "url": "https://telegifter.ru/gifts/collections/sleigh-bell/",
+    "price": "~6.82",
+    "currency": "TON",
+    "supply": "23 025"
+  },
+  {
+    "id": "snake-box",
+    "name": "Snake Box",
+    "image": "/gifts/all/snake-box.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Snake Box.webp",
+    "url": "https://telegifter.ru/gifts/collections/snake-box/",
+    "price": "~3.52",
+    "currency": "TON",
+    "supply": "188 367"
+  },
+  {
+    "id": "snoop-cigar",
+    "name": "Snoop Cigar",
+    "image": "/gifts/all/snoop-cigar.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Snoop Cigar.webp",
+    "url": "https://telegifter.ru/gifts/collections/snoop-cigar/",
+    "price": "~14.05",
+    "currency": "TON",
+    "supply": "117 604"
+  },
+  {
+    "id": "snoop-dogg",
+    "name": "Snoop Dogg",
+    "image": "/gifts/all/snoop-dogg.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Snoop Dogg.webp",
+    "url": "https://telegifter.ru/gifts/collections/snoop-dogg/",
+    "price": "~4.57",
+    "currency": "TON",
+    "supply": "582 081"
+  },
+  {
+    "id": "snow-globe",
+    "name": "Snow Globe",
+    "image": "/gifts/all/snow-globe.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Snow Globe.webp",
+    "url": "https://telegifter.ru/gifts/collections/snow-globe/",
+    "price": "~4.77",
+    "currency": "TON",
+    "supply": "55 393"
+  },
+  {
+    "id": "snow-mittens",
+    "name": "Snow Mittens",
+    "image": "/gifts/all/snow-mittens.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Snow Mittens.webp",
+    "url": "https://telegifter.ru/gifts/collections/snow-mittens/",
+    "price": "~4.81",
+    "currency": "TON",
+    "supply": "40 416"
+  },
+  {
+    "id": "spiced-wine",
+    "name": "Spiced Wine",
+    "image": "/gifts/all/spiced-wine.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Spiced Wine.webp",
+    "url": "https://telegifter.ru/gifts/collections/spiced-wine/",
+    "price": "~4.14",
+    "currency": "TON",
+    "supply": "108 548"
+  },
+  {
+    "id": "easter-backet",
+    "name": "Spring Basket",
+    "image": "/gifts/all/easter-backet.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Spring Basket.webp",
+    "url": "https://telegifter.ru/gifts/collections/easter-backet/",
+    "price": "~5.51",
+    "currency": "TON",
+    "supply": "184 964"
+  },
+  {
+    "id": "spy-agaric",
+    "name": "Spy Agaric",
+    "image": "/gifts/all/spy-agaric.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Spy Agaric.webp",
+    "url": "https://telegifter.ru/gifts/collections/spy-agaric/",
+    "price": "~5.6",
+    "currency": "TON",
+    "supply": "86 907"
+  },
+  {
+    "id": "star-notepad",
+    "name": "Star Notepad",
+    "image": "/gifts/all/star-notepad.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Star Notepad.webp",
+    "url": "https://telegifter.ru/gifts/collections/star-notepad/",
+    "price": "~4.39",
+    "currency": "TON",
+    "supply": "73 700"
+  },
+  {
+    "id": "stellar-rocket",
+    "name": "Stellar Rocket",
+    "image": "/gifts/all/stellar-rocket.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Stellar Rocket.webp",
+    "url": "https://telegifter.ru/gifts/collections/stellar-rocket/",
+    "price": "~4.71",
+    "currency": "TON",
+    "supply": "138 198"
+  },
+  {
+    "id": "surfboard",
+    "name": "Surge Board",
+    "image": "/gifts/all/surfboard.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Surfboard.webp",
+    "url": "https://telegifter.ru/gifts/collections/surfboard/",
+    "price": "~6.73",
+    "currency": "TON",
+    "supply": "31 622"
+  },
+  {
+    "id": "swag-bag",
+    "name": "Swag Bag",
+    "image": "/gifts/all/swag-bag.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Swag Bag.webp",
+    "url": "https://telegifter.ru/gifts/collections/swag-bag/",
+    "price": "~4.89",
+    "currency": "TON",
+    "supply": "232 154"
+  },
+  {
+    "id": "swiss-watch",
+    "name": "Swiss Watch",
+    "image": "/gifts/all/swiss-watch.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Swiss Watch.webp",
+    "url": "https://telegifter.ru/gifts/collections/swiss-watch/",
+    "price": "~54.13",
+    "currency": "TON",
+    "supply": "26 075"
+  },
+  {
+    "id": "tama-gadget",
+    "name": "Tama Gadget",
+    "image": "/gifts/all/tama-gadget.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Tama Gadget.webp",
+    "url": "https://telegifter.ru/gifts/collections/tama-gadget/",
+    "price": "~3.45",
+    "currency": "TON",
+    "supply": "108 108"
+  },
+  {
+    "id": "plane",
+    "name": "Telegram Pin",
+    "image": "/gifts/all/plane.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Plane.webp",
+    "url": "https://telegifter.ru/gifts/collections/plane/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "1 000"
+  },
+  {
+    "id": "book",
+    "name": "Timeless Book",
+    "image": "/gifts/all/book.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Book.webp",
+    "url": "https://telegifter.ru/gifts/collections/book/",
+    "price": "~4.02",
+    "currency": "TON",
+    "supply": "88 304"
+  },
+  {
+    "id": "top-hat",
+    "name": "Top Hat",
+    "image": "/gifts/all/top-hat.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Top Hat.webp",
+    "url": "https://telegifter.ru/gifts/collections/top-hat/",
+    "price": "~9.8",
+    "currency": "TON",
+    "supply": "34 296"
+  },
+  {
+    "id": "toy-bear",
+    "name": "Toy Bear",
+    "image": "/gifts/all/toy-bear.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Toy Bear.webp",
+    "url": "https://telegifter.ru/gifts/collections/toy-bear/",
+    "price": "~33.29",
+    "currency": "TON",
+    "supply": "56 195"
+  },
+  {
+    "id": "trapped-heart",
+    "name": "Trapped Heart",
+    "image": "/gifts/all/trapped-heart.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Trapped Heart.webp",
+    "url": "https://telegifter.ru/gifts/collections/trapped-heart/",
+    "price": "~14.77",
+    "currency": "TON",
+    "supply": "25 112"
+  },
+  {
+    "id": "trojan-horse",
+    "name": "Trojan Horse",
+    "image": "/gifts/all/trojan-horse.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Trojan Horse.webp",
+    "url": "https://telegifter.ru/gifts/collections/trojan-horse/",
+    "price": "Pre-market",
+    "currency": "TON",
+    "supply": "10 000"
+  },
+  {
+    "id": "ufc-mystery-box",
+    "name": "UFC Strike",
+    "image": "/gifts/all/ufc-mystery-box.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/UFC Strike.webp",
+    "url": "https://telegifter.ru/gifts/ufc-mystery-box/",
+    "price": "~14.07",
+    "currency": "TON",
+    "supply": "58 830"
+  },
+  {
+    "id": "valentine-box",
+    "name": "Valentine Box",
+    "image": "/gifts/all/valentine-box.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Valentine Box.webp",
+    "url": "https://telegifter.ru/gifts/collections/valentine-box/",
+    "price": "~10.75",
+    "currency": "TON",
+    "supply": "35 582"
+  },
+  {
+    "id": "ice-cream-cone",
+    "name": "Vice Cream",
+    "image": "/gifts/all/ice-cream-cone.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Ice Cream Cone.webp",
+    "url": "https://telegifter.ru/gifts/collections/ice-cream-cone/",
+    "price": "~3.36",
+    "currency": "TON",
+    "supply": "410 583"
+  },
+  {
+    "id": "medal",
+    "name": "Victory Medal",
+    "image": "/gifts/all/medal.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Medal.webp",
+    "url": "https://telegifter.ru/gifts/collections/medal/",
+    "price": "~4.34",
+    "currency": "TON",
+    "supply": "106 800"
+  },
+  {
+    "id": "vintage-sigar",
+    "name": "Vintage Cigar",
+    "image": "/gifts/all/vintage-sigar.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Vintage Cigar.webp",
+    "url": "https://telegifter.ru/gifts/collections/vintage-sigar/",
+    "price": "~35.68",
+    "currency": "TON",
+    "supply": "26 806"
+  },
+  {
+    "id": "voodoo-doll",
+    "name": "Voodoo Doll",
+    "image": "/gifts/all/voodoo-doll.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Voodoo Doll.webp",
+    "url": "https://telegifter.ru/gifts/collections/voodoo-doll/",
+    "price": "~35",
+    "currency": "TON",
+    "supply": "26 835"
+  },
+  {
+    "id": "westside-sign",
+    "name": "Westside Sign",
+    "image": "/gifts/all/westside-sign.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Westside Sign.webp",
+    "url": "https://telegifter.ru/gifts/collections/westside-sign/",
+    "price": "~102.99",
+    "currency": "TON",
+    "supply": "11 507"
+  },
+  {
+    "id": "whip-cupcake",
+    "name": "Whip Cupcake",
+    "image": "/gifts/all/whip-cupcake.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Whip Cupcake.webp",
+    "url": "https://telegifter.ru/gifts/collections/whip-cupcake/",
+    "price": "~3.44",
+    "currency": "TON",
+    "supply": "282 294"
+  },
+  {
+    "id": "winter-wreath",
+    "name": "Winter Wreath",
+    "image": "/gifts/all/winter-wreath.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Winter Wreath.webp",
+    "url": "https://telegifter.ru/gifts/collections/winter-wreath/",
+    "price": "~3.79",
+    "currency": "TON",
+    "supply": "77 708"
+  },
+  {
+    "id": "witch-hat",
+    "name": "Witch Hat",
+    "image": "/gifts/all/witch-hat.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Witch Hat.webp",
+    "url": "https://telegifter.ru/gifts/collections/witch-hat/",
+    "price": "~5.47",
+    "currency": "TON",
+    "supply": "82 849"
+  },
+  {
+    "id": "xmas-stocking",
+    "name": "Xmas Stocking",
+    "image": "/gifts/all/xmas-stocking.webp",
+    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Xmas Stocking.webp",
+    "url": "https://telegifter.ru/gifts/collections/xmas-stocking/",
+    "price": "~3.52",
+    "currency": "TON",
+    "supply": "229 817"
+  }
+]

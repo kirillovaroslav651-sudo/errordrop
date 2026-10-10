@@ -25,7 +25,6 @@ export default function BuyModal({ onClose, onPurchased }: Props) {
     try {
       // 1. Создаём invoice на бэке
       const { invoiceLink } = await api.invoice(packageId);
-      console.log("invoice link:", invoiceLink);
 
       // 2. Открываем платёж в Telegram через sdk
       try {
@@ -49,16 +48,17 @@ export default function BuyModal({ onClose, onPurchased }: Props) {
   return (
     <div className="overlay" onClick={() => !busy && onClose()}>
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
-        <h3>💎 Купить звёзды</h3>
-        <p className="sub">Оплата через Telegram Stars (XTR). 10% от пополнения приглашённых — тебе на баланс!</p>
+        <div className="modal-top"><small>ERRORDROP / BALANCE</small><button disabled={busy} onClick={onClose} aria-label="Закрыть">×</button></div>
+        <h3>ПОПОЛНИТЬ БАЛАНС</h3>
+        <p className="sub">Оплата настоящими Telegram Stars (XTR) начисляет <b>игровые ⭐</b> внутри ErrorDrop. Их нельзя вывести, обменять на Telegram Stars или NFT. 10% игровых ⭐ от пополнений друзей — бонус пригласившему.</p>
 
         <div className="pkg-grid">
           {PACKAGES.map((p) => (
-            <div key={p.id} className="pkg" onClick={() => buy(p.id)}>
+            <button type="button" key={p.id} className="pkg" disabled={busy} onClick={() => buy(p.id)}>
               <span style={{ fontSize: 30 }}>{p.emoji}</span>
-              <span className="amt">{p.amount} ⭐</span>
-              <span style={{ color: "var(--text-dim)", fontSize: 12 }}>оплатить</span>
-            </div>
+              <span className="amt">+{p.amount} игровых ⭐</span>
+              <span className="pkg-cost">Оплатить {p.amount} XTR</span>
+            </button>
           ))}
         </div>
 

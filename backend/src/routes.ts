@@ -14,8 +14,10 @@ import {
   applyTx,
   claimDailyBonus,
   moscowDay,
+  getGiftGallery,
   PACKAGES,
 } from "./db";
+import giftCatalog from "./giftCatalog.json";
 import { authGuard, requireAuth, TgUser } from "./auth";
 import { isAdmin, toInt } from "./helpers";
 
@@ -38,7 +40,7 @@ router.get("/me", requireAuth, async (req: any, res: Response) => {
 
   const user = await ensureUser(u.id, u.username, refId && refId !== u.id ? refId : null);
   const tx = await getTransactions(u.id, 25);
-  const [rc, drb] = await Promise.all([countReferrals(u.id), dailyBonusReady(u.id)]);
+  const [rc, drb, gallery] = await Promise.all([countReferrals(u.id), dailyBonusReady(u.id), getGiftGallery(u.id)]);
 
   res.json({
     ok: true,
@@ -53,8 +55,38 @@ router.get("/me", requireAuth, async (req: any, res: Response) => {
         dailyBonusReady: drb,
       },
       transactions: tx,
+      gallery,
     },
   });
+});
+
+const giftIds = new Set(giftCatalog.map(gift => gift.id));
+router.post("/gallery", requireAuth, async (req: any, res: Response) => {
+  const giftId = req.body.giftId;
+  if (typeof giftId !== "string" || !giftIds.has(giftId)) return res.status(400).json({ ok: false, error: "invalid_gift" });
+  const userId = req.auth.user.id;
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+    // Serialise additions per user so concurrent taps cannot exceed the 24-item limit.
+    await client.query(`SELECT telegram_id FROM users WHERE telegram_id = $1 FOR UPDATE`, [userId]);
+    await client.query(
+      `INSERT INTO gift_gallery (user_id, gift_id)
+       SELECT $1, $2 WHERE (SELECT COUNT(*) FROM gift_gallery WHERE user_id = $1) < 24
+       ON CONFLICT DO NOTHING`, [userId, giftId]
+    );
+    await client.query("COMMIT");
+    res.json({ ok: true, data: { gallery: await getGiftGallery(userId) } });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("gallery add failed", error);
+    res.status(500).json({ ok: false, error: "gallery_failed" });
+  } finally { client.release(); }
+});
+
+router.delete("/gallery/:giftId", requireAuth, async (req: any, res: Response) => {
+  await db.query(`DELETE FROM gift_gallery WHERE user_id = $1 AND gift_id = $2`, [req.auth.user.id, req.params.giftId]);
+  res.json({ ok: true, data: { gallery: await getGiftGallery(req.auth.user.id) } });
 });
 
 /** Проверить, доступен ли ежедневный бонус сегодня. */
