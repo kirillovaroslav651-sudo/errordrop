@@ -7,7 +7,7 @@
     "code": "01",
     "subtitle": "ПЕРВЫЙ СБОЙ",
     "tone": "scarlet",
-    "giftChance": 5,
+    "giftChance": 15,
     "giftMax": 150,
     "outcomes": [
       {
@@ -16,7 +16,7 @@
       },
       {
         "stars": 89,
-        "chance": 45
+        "chance": 35
       }
     ],
     "bonusMode": "stars",

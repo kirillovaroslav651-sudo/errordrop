@@ -199,8 +199,15 @@ router.post("/admin/credit", requireAuth, async (req: any, res: Response) => {
   if (!isAdmin(id)) return res.status(403).json({ ok: false, error: "forbidden" });
 
   const amount = toInt(req.body.amount);
-  const target = toInt(req.body.target);
-  const targetId = target && target > 0 ? target : id;
+  const rawTarget = typeof req.body.target === "string" ? req.body.target.trim().replace(/^@/, "") : req.body.target;
+  const target = toInt(rawTarget);
+  let targetId = target && target > 0 ? target : id;
+  if (!target && rawTarget) {
+    if (!/^[a-zA-Z0-9_]{5,32}$/.test(rawTarget)) return res.status(400).json({ ok: false, error: "invalid_target" });
+    const found = await db.query(`SELECT telegram_id FROM users WHERE lower(username)=lower($1) LIMIT 1`, [rawTarget]);
+    if (!found.rows[0]) return res.status(404).json({ ok: false, error: "user_not_found" });
+    targetId = Number(found.rows[0].telegram_id);
+  }
   if (!amount || amount <= 0 || amount > 100000)
     return res.status(400).json({ ok: false, error: "invalid_amount" });
 

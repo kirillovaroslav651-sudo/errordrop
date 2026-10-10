@@ -291,39 +291,27 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     if (Number(user.rows[0].balance) < c.price) throw new Error("insufficient_balance");
     const roll = crypto.randomInt(10000);
     const giftRoll = roll < c.giftChance * 100;
-    let reward: CaseReward;
-    if (giftRoll && c.bonusMode === "stars") {
-      const min = c.price;
-      const max = Math.max(min, c.bonusMax ?? c.price);
-      reward = { type: "stars", stars: min + crypto.randomInt(max - min + 1) };
-    } else if (giftRoll) {
-      // The roulette may show expensive gifts, but a real gift can only be
-      // awarded from this case's configured maximum value.
-      const poolForCase = playableGifts.filter(g => g.value <= (c.giftMax ?? Number.MAX_SAFE_INTEGER));
-      // If a future case has no catalog gift under its cap, fall back to a
-      // star payout instead of calling randomInt(0).
-      if (!poolForCase.length) {
-        const max = Math.max(c.price, c.bonusMax ?? c.price);
-        reward = { type: "stars", stars: c.price + crypto.randomInt(max - c.price + 1) };
-      } else {
-      const g = poolForCase[crypto.randomInt(poolForCase.length)];
-      const sellValue = Math.max(1, Math.round(g.value * 0.1));
-      const inv = await client.query(`INSERT INTO gift_inventory(user_id,gift_id,case_id,display_value,sell_value)
-        VALUES($1,$2,$3,$4,$5) RETURNING id`, [userId,g.id,caseId,g.value,sellValue]);
-      reward = { type: "gift", stars: 0, giftId: g.id, inventoryId: Number(inv.rows[0].id), value: g.value };
-      }
-    } else {
-      // Fixed star payouts and weights are part of the case config. If a
-      // config intentionally leaves a small remainder (the 249 case is 95%),
-      // use its first payout as a deterministic fallback rather than inventing
-      // a new reward type.
-      const outcomes = c.outcomes ?? [];
-      const total = outcomes.reduce((sum, item) => sum + item.chance, 0);
-      const pick = crypto.randomInt(Math.max(1, total));
-      let cursor = 0;
-      const outcome = outcomes.find(item => (cursor += item.chance) > pick) ?? outcomes[0];
-      reward = { type: "stars", stars: outcome?.stars ?? Math.max(1, Math.floor(c.price * 0.25)) };
-    }
+    const outcomes = c.outcomes ?? [];
+    const total = outcomes.reduce((sum, item) => sum + item.chance, 0);
+    const pick = crypto.randomInt(Math.max(1, total));
+    let cursor = 0;
+    const outcome = outcomes.find(item => (cursor += item.chance) > pick) ?? outcomes[0];
+    // Paid cases always award a gift. The configured star amounts are target
+    // values used to choose a catalog gift with a randomized ±20% value band.
+    const target = giftRoll
+      ? c.price + crypto.randomInt(Math.max(1, (c.bonusMax ?? c.price) - c.price + 1))
+      : (outcome?.stars ?? c.price);
+    const minValue = Math.max(1, Math.floor(target * 0.8));
+    const maxValue = Math.max(minValue, Math.ceil(target * 1.2));
+    const candidates = playableGifts.filter(g => g.value >= minValue && g.value <= maxValue);
+    const poolForCase = candidates.length
+      ? candidates
+      : [...playableGifts].sort((a, b) => Math.abs(a.value - target) - Math.abs(b.value - target)).slice(0, 12);
+    const g = poolForCase[crypto.randomInt(poolForCase.length)];
+    const sellValue = Math.max(1, Math.round(g.value * 0.1));
+    const inv = await client.query(`INSERT INTO gift_inventory(user_id,gift_id,case_id,display_value,sell_value)
+      VALUES($1,$2,$3,$4,$5) RETURNING id`, [userId,g.id,caseId,g.value,sellValue]);
+    const reward: CaseReward = { type: "gift", stars: 0, giftId: g.id, inventoryId: Number(inv.rows[0].id), value: g.value };
     const balance = Number(user.rows[0].balance) - c.price + reward.stars;
     await client.query(`UPDATE users SET balance=$1 WHERE telegram_id=$2`, [balance,userId]);
     await client.query(`INSERT INTO transactions(user_id,type,amount,bet_id,game,choice)

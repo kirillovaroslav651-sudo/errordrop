@@ -83,7 +83,7 @@ export const api = {
       method: "POST",
       body: JSON.stringify({}),
     }),
-  adminCredit: (amount: number, target?: number) =>
+  adminCredit: (amount: number, target?: number|string) =>
     request<{ target: number; credited: number; balance: number }>("/api/admin/credit", {
       method: "POST",
       body: JSON.stringify({ amount, target }),
