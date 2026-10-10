@@ -26,17 +26,21 @@ export default function BuyModal({ onClose, onPurchased }: Props) {
       // 1. Создаём invoice на бэке
       const { invoiceLink } = await api.invoice(packageId);
 
-      // 2. Открываем платёж в Telegram через sdk
+      // Telegram SDK uses a callback; openInvoice itself does not return a Promise.
       try {
-        await WebApp.openInvoice(invoiceLink);
-        // Если openInvoice не кинул ошибку и пользователь закрыл — это не значит, что оплатил.
-        // Точный сигнал — вебхук successful_payment на бэке (он сам обновит баланс при следующем /me).
-        // Здесь просто перезагружаем юзера, чтобы подхватить возможное пополнение.
-        await onPurchased();
+        const status = await new Promise<string>((resolve) => WebApp.openInvoice(invoiceLink, resolve));
+        if (status === "paid") {
+          // The payment webhook can arrive just after the Telegram client callback.
+          await new Promise((resolve) => setTimeout(resolve, 700));
+          await onPurchased();
+        } else {
+          setError(status === "pending"
+            ? "Платёж обрабатывается. Проверь баланс через несколько секунд."
+            : "Оплата не завершена. Игровой баланс не пополнен.");
+          setBusy(false);
+        }
       } catch (invErr: any) {
-        // Пользователь закрыл платёж не оплатив → Telegram кидает "invoice_closed".
-        console.warn("invoice closed:", invErr);
-        setError("Оплата не завершена. Если баланс не обновился не мгновенно — обнови приложение.");
+        setError("Не удалось открыть счёт в Telegram. Попробуй снова.");
         setBusy(false);
       }
     } catch (e: any) {
