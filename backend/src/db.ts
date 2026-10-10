@@ -108,6 +108,9 @@ export async function initDb() {
         created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
       );
+      -- Gift sales use the displayed in-game value. Repair older rows that
+      -- were created with the previous 10% resale rule.
+      UPDATE gift_inventory SET sell_value = display_value WHERE sell_value < display_value;
       CREATE INDEX IF NOT EXISTS idx_inventory_user ON gift_inventory(user_id, id DESC);
       CREATE TABLE IF NOT EXISTS case_spins (
         bet_id TEXT PRIMARY KEY,
@@ -308,7 +311,7 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
       ? candidates
       : [...playableGifts].sort((a, b) => Math.abs(a.value - target) - Math.abs(b.value - target)).slice(0, 12);
     const g = poolForCase[crypto.randomInt(poolForCase.length)];
-    const sellValue = Math.max(1, Math.round(g.value * 0.1));
+    const sellValue = g.value;
     const inv = await client.query(`INSERT INTO gift_inventory(user_id,gift_id,case_id,display_value,sell_value)
       VALUES($1,$2,$3,$4,$5) RETURNING id`, [userId,g.id,caseId,g.value,sellValue]);
     const reward: CaseReward = { type: "gift", stars: 0, giftId: g.id, inventoryId: Number(inv.rows[0].id), value: g.value };

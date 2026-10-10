@@ -1,15 +1,5 @@
 [
   {
-    "id": "1-may",
-    "name": "1 May",
-    "image": "/gifts/all/1-may.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/1 May.webp",
-    "url": "https://telegifter.ru/gifts/collections/1-may/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "500 000"
-  },
-  {
     "id": "algorithm-cup",
     "name": "Algorithm Cup",
     "image": "/gifts/all/algorithm-cup.webp",
@@ -120,16 +110,6 @@
     "supply": "228 850"
   },
   {
-    "id": "case",
-    "name": "Case",
-    "image": "/gifts/all/case.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Case.webp",
-    "url": "https://telegifter.ru/gifts/collections/case/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "25 000"
-  },
-  {
     "id": "torch-freedom",
     "name": "Chill Flame",
     "image": "/gifts/all/torch-freedom.webp",
@@ -158,26 +138,6 @@
     "price": "~4.49",
     "currency": "TON",
     "supply": "186 480"
-  },
-  {
-    "id": "coconut",
-    "name": "Coconut",
-    "image": "/gifts/all/coconut.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Coconut.webp",
-    "url": "https://telegifter.ru/gifts/collections/coconut/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "500 000"
-  },
-  {
-    "id": "coffin",
-    "name": "Coffin",
-    "image": "/gifts/all/coffin.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Coffin.webp",
-    "url": "https://telegifter.ru/gifts/collections/coffin/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "40 000"
   },
   {
     "id": "cookie-heart",
@@ -230,26 +190,6 @@
     "supply": "32 275"
   },
   {
-    "id": "dove-peace",
-    "name": "Dove of Peace",
-    "image": "/gifts/all/dove-peace.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Dove of Peace.webp",
-    "url": "https://telegifter.ru/gifts/collections/dove-peace/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "250 000"
-  },
-  {
-    "id": "durovs-boots",
-    "name": "Durov's Boots",
-    "image": "/gifts/all/durovs-boots.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Durovs Boots.webp",
-    "url": "https://telegifter.ru/gifts/collections/durovs-boots/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "10 000"
-  },
-  {
     "id": "durovs-cap",
     "name": "Durov's Cap",
     "image": "/gifts/all/durovs-cap.webp",
@@ -260,26 +200,6 @@
     "supply": "4 710"
   },
   {
-    "id": "durovs-coat",
-    "name": "Durov's Coat",
-    "image": "/gifts/all/durovs-coat.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Durovs Coat.webp",
-    "url": "https://telegifter.ru/gifts/collections/durovs-coat/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "10 000"
-  },
-  {
-    "id": "durovs-figurine",
-    "name": "Durov's Figurine",
-    "image": "/gifts/all/durovs-figurine.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Durovs Figurine.webp",
-    "url": "https://telegifter.ru/gifts/collections/durovs-figurine/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "4 100"
-  },
-  {
     "id": "durovs-sunglasses",
     "name": "Durovs Glasses",
     "image": "/gifts/all/durovs-sunglasses.webp",
@@ -288,16 +208,6 @@
     "price": "~93.5",
     "currency": "TON",
     "supply": "3 779"
-  },
-  {
-    "id": "easter-cake",
-    "name": "Easter Cake",
-    "image": "/gifts/all/easter-cake.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Easter Cake.webp",
-    "url": "https://telegifter.ru/gifts/collections/easter-cake/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "500 000"
   },
   {
     "id": "easter-egg",
@@ -420,16 +330,6 @@
     "supply": "151 488"
   },
   {
-    "id": "gravestone",
-    "name": "Gravestone",
-    "image": "/gifts/all/gravestone.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Gravestone.webp",
-    "url": "https://telegifter.ru/gifts/collections/gravestone/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "10 000"
-  },
-  {
     "id": "hanging-star",
     "name": "Hanging Star",
     "image": "/gifts/all/hanging-star.webp",
@@ -528,16 +428,6 @@
     "price": "~3.43",
     "currency": "TON",
     "supply": "328 618"
-  },
-  {
-    "id": "ice-cream-scoops",
-    "name": "Ice Cream Scoops",
-    "image": "/gifts/all/ice-cream-scoops.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Ice Cream Scoops.webp",
-    "url": "https://telegifter.ru/gifts/collections/ice-cream-scoops/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "250 000"
   },
   {
     "id": "heart-button",
@@ -790,16 +680,6 @@
     "supply": "4 871"
   },
   {
-    "id": "mask",
-    "name": "Mask",
-    "image": "/gifts/all/mask.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Mask.webp",
-    "url": "https://telegifter.ru/gifts/collections/mask/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "250 000"
-  },
-  {
     "id": "golden-biceps",
     "name": "Mighty Arm",
     "image": "/gifts/all/golden-biceps.webp",
@@ -980,26 +860,6 @@
     "supply": "35 331"
   },
   {
-    "id": "red-star",
-    "name": "Red Star",
-    "image": "/gifts/all/red-star.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Red Star.webp",
-    "url": "https://telegifter.ru/gifts/collections/red-star/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "500 000"
-  },
-  {
-    "id": "resistance-dog",
-    "name": "Resistance Dog",
-    "image": "/gifts/all/resistance-dog.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Resistance Dog.webp",
-    "url": "https://telegifter.ru/gifts/collections/resistance-dog/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "20 000"
-  },
-  {
     "id": "restless-jar",
     "name": "Restless Jar",
     "image": "/gifts/all/restless-jar.webp",
@@ -1010,16 +870,6 @@
     "supply": "103 263"
   },
   {
-    "id": "roses",
-    "name": "Roses",
-    "image": "/gifts/all/roses.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Roses.webp",
-    "url": "https://telegifter.ru/gifts/collections/roses/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "150 000"
-  },
-  {
     "id": "sakura-flower",
     "name": "Sakura Flower",
     "image": "/gifts/all/sakura-flower.webp",
@@ -1028,16 +878,6 @@
     "price": "~9.99",
     "currency": "TON",
     "supply": "87 982"
-  },
-  {
-    "id": "sandcastle",
-    "name": "Sandcastle",
-    "image": "/gifts/all/sandcastle.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Sandcastle.webp",
-    "url": "https://telegifter.ru/gifts/collections/sandcastle/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "150 000"
   },
   {
     "id": "santa-hat",
@@ -1250,16 +1090,6 @@
     "supply": "108 108"
   },
   {
-    "id": "plane",
-    "name": "Telegram Pin",
-    "image": "/gifts/all/plane.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Plane.webp",
-    "url": "https://telegifter.ru/gifts/collections/plane/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "1 000"
-  },
-  {
     "id": "book",
     "name": "Timeless Book",
     "image": "/gifts/all/book.webp",
@@ -1298,16 +1128,6 @@
     "price": "~14.77",
     "currency": "TON",
     "supply": "25 112"
-  },
-  {
-    "id": "trojan-horse",
-    "name": "Trojan Horse",
-    "image": "/gifts/all/trojan-horse.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Trojan Horse.webp",
-    "url": "https://telegifter.ru/gifts/collections/trojan-horse/",
-    "price": "Pre-market",
-    "currency": "TON",
-    "supply": "10 000"
   },
   {
     "id": "ufc-mystery-box",

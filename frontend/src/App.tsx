@@ -90,7 +90,7 @@ export default function App() {
           const target=bonus?current.price+Math.floor(Math.random()*Math.max(1,(current.bonusMax??current.price)-current.price+1)):(picked?.stars??current.price);
           const near=pool.filter(g=>{const v=starValue(g)??0;return v>=target*.8&&v<=target*1.2}); const choices=near.length?near:pool.slice().sort((a,b)=>Math.abs((starValue(a)??0)-target)-Math.abs((starValue(b)??0)-target)).slice(0,12); const gift=choices[Math.floor(Math.random()*choices.length)];
           data={caseId:current.id,price:current.price,reward:{type:"gift",stars:0,giftId:gift.id,inventoryId:Date.now(),value:starValue(gift)??0},balance:me.user.balance-current.price};
-          setMe(m=>m?{...m,user:{...m.user,balance:m.user.balance-current.price},inventory:[{id:data.reward.inventoryId!,giftId:data.reward.giftId!,caseId:current.id,value:data.reward.value!,sellValue:Math.round(data.reward.value!*.1),status:"owned",createdAt:Date.now()/1000},...m.inventory]}:m);
+          setMe(m=>m?{...m,user:{...m.user,balance:m.user.balance-current.price},inventory:[{id:data.reward.inventoryId!,giftId:data.reward.giftId!,caseId:current.id,value:data.reward.value!,sellValue:data.reward.value!,status:"owned",createdAt:Date.now()/1000},...m.inventory]}:m);
         }
       }else data=await api.openCase(current.id,crypto.randomUUID());
       const pool=gifts.filter(g=>starValue(g)!==null);
