@@ -475,7 +475,11 @@ export async function claimDailyBonus(telegramId: number, amount: number): Promi
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    await client.query(`SELECT pg_advisory_xact_lock($1, $2)`, [17, telegramId]);
+    // Telegram IDs are 64-bit values in practice (and can exceed a Postgres
+    // 32-bit integer), so do not pass them to pg_advisory_xact_lock(int,int).
+    // The user row is created during /me and provides a natural per-user
+    // transaction lock for concurrent daily claims.
+    await client.query(`SELECT telegram_id FROM users WHERE telegram_id = $1 FOR UPDATE`, [telegramId]);
     const before = await client.query(`SELECT last_day FROM daily_bonus WHERE user_id = $1 FOR UPDATE`, [telegramId]);
     if (before.rows[0] && before.rows[0].last_day === day) {
       await client.query("ROLLBACK");

@@ -33,7 +33,6 @@ export default function App() {
   const [wheel,setWheel] = useState<Wheel|null>(null);
   const wheelTrack = useRef<HTMLDivElement|null>(null);
   const wheelWindow = useRef<HTMLDivElement|null>(null);
-  const swipeY = useRef<number|null>(null);
   const [prizesOpen,setPrizesOpen] = useState(false);
   const [settingsOpen,setSettingsOpen] = useState(false);
   const [buyOpen,setBuyOpen] = useState(false);
@@ -75,7 +74,6 @@ export default function App() {
     window.addEventListener("keydown",close);return()=>window.removeEventListener("keydown",close);
   },[opening]);
   const navigate=(next:Tab)=>{feel();setTab(next);window.scrollTo({top:0,behavior:lessMotion?"instant":"smooth"})};
-  const shiftCase=(step:number)=>{if(opening)return;feel();setCaseIndex(i=>(i+step+cases.length)%cases.length)};
 
   async function openCase(){
     if(!me||opening)return;
@@ -180,10 +178,12 @@ export default function App() {
     <main className="screen" key={tab}>
       {tab==="cases"&&<><div className="screen-kicker"><span className="red-line"/> ERRORDROP / CASE ROOM <span className="season">СЕЗОН 01</span></div><h1 className="main-title">ТВОЙ ДРОП.<br/><em>ТВОИ ПРАВИЛА.</em></h1>
         <div className="live-heading"><span className="live-pill"><i/>GIFTS</span><span>ВОЗМОЖНЫЕ ПОДАРКИ</span><small>игровая витрина</small></div><div className="live-strip">{gifts.filter(g=>starValue(g)!==null).slice(0,18).map(g=><button className="live-item" key={g.id} onClick={()=>{setQuery(g.name);navigate("catalog")}}><img src={g.image} loading="lazy" alt=""/><span>{g.name}</span></button>)}</div>
-        <div className="carousel-heading"><div><small>ВЫБЕРИ КЕЙС</small><b>{selected.code} <span>/ 0{cases.length-1}</span></b></div><span className="carousel-rule"/><span className="carousel-mark">◈</span></div>
-        <section className="carousel" aria-label="Карусель кейсов" onTouchStart={e=>swipeY.current=e.touches[0].clientY} onTouchEnd={e=>{if(swipeY.current!==null){const delta=e.changedTouches[0].clientY-swipeY.current;if(Math.abs(delta)>45)shiftCase(delta<0?1:-1);swipeY.current=null}}}>
-          <button className="carousel-arrow arrow-top" onClick={()=>shiftCase(-1)} aria-label="Предыдущий кейс">⌃</button><div className="carousel-stage">{[-1,0,1].map(offset=>{const c=cases[(caseIndex+offset+cases.length)%cases.length];return <button key={`${c.id}-${offset}`} className={`carousel-card position-${offset===-1?"left":offset===1?"right":"center"} ${c.tone}`} onClick={()=>offset&&shiftCase(offset)} aria-label={`${c.name}, ${c.price} игровых звёзд`} aria-current={offset===0?"true":undefined}><div className="card-top"><span>ERRORDROP</span><span>ED—{c.code}</span></div><div className="case-glow"/><img src={caseCover(c.cover)} alt=""/><div className="case-title"><small>{c.subtitle}</small><b>{c.name}</b></div><div className="case-bottom"><span>✦</span><span>DROP / 2026</span></div></button>})}</div><button className="carousel-arrow arrow-bottom" onClick={()=>shiftCase(1)} aria-label="Следующий кейс">⌄</button>
-        </section><div className="case-meta"><span>{selected.subtitle}</span><h2>{selected.name}</h2><div><span className="gold-star">★</span> {selected.price||"БЕСПЛАТНО"} <small>{selected.price?"игровых ⭐":"1 раз в сутки"}</small></div></div>
+        <div className="carousel-heading"><div><small>ВЫБЕРИ КЕЙС</small><b>{cases.length} <span>ДОСТУПНО</span></b></div><span className="carousel-rule"/><span className="carousel-mark">◈</span></div>
+        <section className="case-grid" aria-label="Все кейсы">{cases.map((c,i)=><button key={c.id} className={`case-grid-card ${c.tone} ${i===caseIndex?"selected":""}`} onClick={()=>{feel();setCaseIndex(i)}} aria-pressed={i===caseIndex}>
+          <div className="case-grid-art"><span className="case-grid-code">ED—{c.code}</span><img src={caseCover(c.cover)} alt=""/><span className="case-grid-badge">{c.price===0?"БЕСПЛАТНО":c.subtitle}</span></div>
+          <div className="case-grid-info"><b>{c.name}</b><span>{c.price===0?<>★ 0 <small>1 раз в сутки</small></>:<>★ {c.price}</>}</span></div>
+        </button>)}</section>
+        <div className="case-meta"><span>{selected.subtitle}</span><h2>{selected.name}</h2><div><span className="gold-star">★</span> {selected.price||"БЕСПЛАТНО"} <small>{selected.price?"игровых ⭐":"1 раз в сутки"}</small></div></div>
         <div className="case-actions"><button onClick={()=>{feel();setSettingsOpen(true)}}>⚙ <span>Настройки</span></button><button onClick={()=>{feel();setPrizesOpen(true)}}>◇ <span>Призы</span></button></div>
         <button className="spin-cta" onClick={openCase} disabled={opening||(!selected.price&&!me.user.dailyBonusReady)}>{opening?"КРУТИМ…":selected.price?<>КРУТИТЬ ЗА <span>★ {selected.price}</span></>:me.user.dailyBonusReady?"ОТКРЫТЬ БЕСПЛАТНО →":"УЖЕ ОТКРЫТО СЕГОДНЯ"}<i>→</i></button>
         <p className="fineprint">{selected.price?`Звёзды ниже цены выпадают в ${100-selected.giftChance}% случаев. Подарок — ${selected.giftChance}%. Результат определяется сервером.`:"Только 5 игровых ⭐, один раз за московские сутки."} Реальные Telegram NFT не передаются автоматически.</p>
