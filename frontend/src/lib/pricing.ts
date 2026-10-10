@@ -1,6 +1,6 @@
-/** Internal display value. 1 TON = ₽125 (owner-supplied); 1 in-game ⭐ = ₽1 for this catalogue only. */
+/** Internal display value. 1 TON = ₽125 (owner-supplied); 100 in-game ⭐ = ₽150 for this catalogue only. */
 export const TON_RUB = 125;
-export const GAME_STAR_RUB = 1;
+export const GAME_STAR_RUB = 1.5;
 export function giftStarValue(price: string, currency: string): number | null {
   if (price === "Pre-market") return null;
   const n = Number(price.replace(/^~/," ").trim().replace(",","."));
