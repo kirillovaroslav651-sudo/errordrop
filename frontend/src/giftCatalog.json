@@ -50,16 +50,6 @@
     "supply": "265 913"
   },
   {
-    "id": "bear-terrorist",
-    "name": "Bear Terrorist",
-    "image": "/gifts/all/bear-terrorist.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Bear Terrorist.webp",
-    "url": "https://telegifter.ru/gifts/collections/bear-terrorist/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
-  },
-  {
     "id": "berry-box",
     "name": "Berry Box",
     "image": "/gifts/all/berry-box.webp",
@@ -168,16 +158,6 @@
     "price": "~4.49",
     "currency": "TON",
     "supply": "186 480"
-  },
-  {
-    "id": "bear-clown",
-    "name": "Clown Bear",
-    "image": "/gifts/all/bear-clown.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Clown Bear.webp",
-    "url": "https://telegifter.ru/gifts/collections/bear-clown/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
   },
   {
     "id": "coconut",
@@ -310,16 +290,6 @@
     "supply": "3 779"
   },
   {
-    "id": "easter-bear",
-    "name": "Easter Bear",
-    "image": "/gifts/all/easter-bear.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Easter Bear.webp",
-    "url": "https://telegifter.ru/gifts/collections/easter-bear/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
-  },
-  {
     "id": "easter-cake",
     "name": "Easter Cake",
     "image": "/gifts/all/easter-cake.webp",
@@ -408,16 +378,6 @@
     "price": "~11.96",
     "currency": "TON",
     "supply": "24 851"
-  },
-  {
-    "id": "football-bear",
-    "name": "Football Bear",
-    "image": "/gifts/all/football-bear.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Football Bear.webp",
-    "url": "https://telegifter.ru/gifts/collections/football-bear/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
   },
   {
     "id": "socks",
@@ -630,16 +590,6 @@
     "supply": "20 821"
   },
   {
-    "id": "irish-bear",
-    "name": "Irish Bear",
-    "image": "/gifts/all/irish-bear.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Irish Bear.webp",
-    "url": "https://telegifter.ru/gifts/collections/irish-bear/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
-  },
-  {
     "id": "jackinthebox",
     "name": "Jack in the Box",
     "image": "/gifts/all/jackinthebox.webp",
@@ -850,16 +800,6 @@
     "supply": "250 000"
   },
   {
-    "id": "may-bear",
-    "name": "May Bear",
-    "image": "/gifts/all/may-bear.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/May Bear.webp",
-    "url": "https://telegifter.ru/gifts/collections/may-bear/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
-  },
-  {
     "id": "golden-biceps",
     "name": "Mighty Arm",
     "image": "/gifts/all/golden-biceps.webp",
@@ -950,16 +890,6 @@
     "supply": "15 454"
   },
   {
-    "id": "bear-new-year",
-    "name": "New Year's Bear",
-    "image": "/gifts/all/bear-new-year.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Bear New Year.webp",
-    "url": "https://telegifter.ru/gifts/collections/bear-new-year/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
-  },
-  {
     "id": "party-sparkler",
     "name": "Party Sparkler",
     "image": "/gifts/all/party-sparkler.webp",
@@ -990,16 +920,6 @@
     "supply": "191 835"
   },
   {
-    "id": "pink-bear",
-    "name": "Pink Bear",
-    "image": "/gifts/all/pink-bear.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Pink Bear.webp",
-    "url": "https://telegifter.ru/gifts/collections/pink-bear/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
-  },
-  {
     "id": "plush-pepe",
     "name": "Plush Pepe",
     "image": "/gifts/all/plush-pepe.webp",
@@ -1008,16 +928,6 @@
     "price": "~5350",
     "currency": "TON",
     "supply": "2 825"
-  },
-  {
-    "id": "polar-bear",
-    "name": "Polar Bear",
-    "image": "/gifts/all/polar-bear.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Polar Bear.webp",
-    "url": "https://telegifter.ru/gifts/collections/polar-bear/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
   },
   {
     "id": "pink-flamingo",
