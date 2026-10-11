@@ -136,16 +136,6 @@
     "supply": "436 049"
   },
   {
-    "id": "christmas-tree",
-    "name": "Christmas Tree",
-    "image": "/gifts/all/christmas-tree.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/Christmas Tree.webp",
-    "url": "https://telegifter.ru/gifts/collections/christmas-tree/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
-  },
-  {
     "id": "clover",
     "name": "Clover Pin",
     "image": "/gifts/all/clover.webp",
@@ -476,16 +466,6 @@
     "supply": "84 044",
     "priceSource": "MRKT screenshot",
     "priceObservedAt": "2026-10-11"
-  },
-  {
-    "id": "i-love-you",
-    "name": "I love you",
-    "image": "/gifts/all/i-love-you.webp",
-    "source": "https://telegifter.ru/wp-content/themes/gifts/assets/img/gifts/noupdate/I love you.webp",
-    "url": "https://telegifter.ru/gifts/collections/i-love-you/",
-    "price": "50",
-    "currency": "⭐",
-    "supply": ""
   },
   {
     "id": "ice-cream-bar",
