@@ -20,3 +20,6 @@ npm-debug.log*
 # Системное
 .DS_Store
 Thumbs.db
+
+# Temporary OCR workspace
+tmp/

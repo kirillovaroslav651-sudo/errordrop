@@ -133,6 +133,17 @@ export async function initDb() {
       );
     `);
 
+    // Reprice owned inventory to the current catalogue snapshot. Historical sold
+    // items and pending withdrawals remain untouched; no balance is changed.
+    const currentPrices = playableGifts.map(g => ({ id: g.id, value: g.value }));
+    await client.query(`
+      UPDATE gift_inventory AS i SET display_value = p.value,
+        sell_value = p.value, updated_at = now()
+      FROM jsonb_to_recordset($1::jsonb) AS p(id text, value integer)
+      WHERE i.gift_id = p.id AND i.status = 'owned'
+        AND (i.display_value <> p.value OR i.sell_value <> p.value)
+    `, [JSON.stringify(currentPrices)]);
+
     // ref_code для всех, у кого его нет
     const missing = await client.query(
       `SELECT telegram_id FROM users WHERE ref_code IS NULL`
@@ -299,11 +310,16 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     const pick = crypto.randomInt(Math.max(1, total));
     let cursor = 0;
     const outcome = outcomes.find(item => (cursor += item.chance) > pick) ?? outcomes[0];
-    // Paid cases always award a gift. The configured star amounts are target
-    // values used to choose a catalog gift with a randomized ±20% value band.
-    const target = giftRoll
-      ? c.price + crypto.randomInt(Math.max(1, (c.bonusMax ?? c.price) - c.price + 1))
-      : (outcome?.stars ?? c.price);
+    let reward: CaseReward;
+    // The first cases intentionally keep star payouts. Higher cases convert
+    // their target value into a catalog gift; the 99⭐ case can still award a
+    // profitable gift on its configured bonus chance.
+    if (c.bonusMode === "stars" || !giftRoll) {
+      reward = { type: "stars", stars: giftRoll
+        ? c.price + crypto.randomInt(Math.max(1, (c.bonusMax ?? c.price) - c.price + 1))
+        : (outcome?.stars ?? c.price) };
+    } else {
+    const target = c.price + crypto.randomInt(Math.max(1, (c.bonusMax ?? c.price) - c.price + 1));
     const minValue = Math.max(1, Math.floor(target * 0.8));
     const maxValue = Math.max(minValue, Math.ceil(target * 1.2));
     const candidates = playableGifts.filter(g => g.value >= minValue && g.value <= maxValue);
@@ -314,7 +330,8 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     const sellValue = g.value;
     const inv = await client.query(`INSERT INTO gift_inventory(user_id,gift_id,case_id,display_value,sell_value)
       VALUES($1,$2,$3,$4,$5) RETURNING id`, [userId,g.id,caseId,g.value,sellValue]);
-    const reward: CaseReward = { type: "gift", stars: 0, giftId: g.id, inventoryId: Number(inv.rows[0].id), value: g.value };
+    reward = { type: "gift", stars: 0, giftId: g.id, inventoryId: Number(inv.rows[0].id), value: g.value };
+    }
     const balance = Number(user.rows[0].balance) - c.price + reward.stars;
     await client.query(`UPDATE users SET balance=$1 WHERE telegram_id=$2`, [balance,userId]);
     await client.query(`INSERT INTO transactions(user_id,type,amount,bet_id,game,choice)
