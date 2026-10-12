@@ -34,7 +34,7 @@ export type MeData = {
   transactions: Tx[];
   gallery: string[];
   inventory: InventoryItem[];
-  withdrawalAccess: { paid: number; committed: number; availableXtr: number; referralCount: number; friendPayments: number[] };
+  withdrawalAccess: { paid: number; committed: number; availableXtr: number; referralCount: number; friendPayments: number[]; openedCases:number; level:number; requiredLevel:number };
 };
 
 export type InventoryItem = { id: number; giftId: string; caseId: string; value: number; sellValue: number; status: "owned" | "sold" | "pending" | "withdrawn" | "removed"; createdAt: number };

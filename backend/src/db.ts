@@ -156,6 +156,10 @@ export async function initDb() {
       );
       ALTER TABLE gift_withdrawals ADD COLUMN IF NOT EXISTS funding_method TEXT;
       ALTER TABLE gift_withdrawals ADD COLUMN IF NOT EXISTS committed_xtr INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE gift_withdrawals ADD COLUMN IF NOT EXISTS level_snapshot INTEGER;
+      UPDATE gift_withdrawals w SET level_snapshot = 1 + (
+        SELECT COUNT(*)::int / 10 FROM case_spins s WHERE s.user_id=w.user_id AND s.created_at<=w.created_at
+      ) WHERE level_snapshot IS NULL AND status IN ('pending','fulfilled');
       CREATE TABLE IF NOT EXISTS withdrawal_referrals (
         withdrawal_id BIGINT NOT NULL REFERENCES gift_withdrawals(id),
         friend_id BIGINT NOT NULL REFERENCES users(telegram_id),
@@ -221,8 +225,10 @@ export async function getWithdrawalAccess(userId: number, client: { query: (sql:
   const result = await client.query(`SELECT
     COALESCE((SELECT SUM(amount) FROM transactions WHERE user_id=$1 AND type='purchase'),0)::int AS paid,
     COALESCE((SELECT SUM(committed_xtr) FROM gift_withdrawals WHERE user_id=$1 AND status IN ('pending','fulfilled')),0)::int AS committed,
-    (SELECT COUNT(*)::int FROM users WHERE referred_by=$1) AS referral_count`, [userId]);
-  const { paid, committed, referral_count: referralCount } = result.rows[0];
+    (SELECT COUNT(*)::int FROM users WHERE referred_by=$1) AS referral_count,
+    (SELECT COUNT(*)::int FROM case_spins WHERE user_id=$1) AS opened_cases,
+    (SELECT MAX(level_snapshot) FROM gift_withdrawals WHERE user_id=$1 AND status IN ('pending','fulfilled')) AS last_withdrawal_level`, [userId]);
+  const { paid, committed, referral_count: referralCount, opened_cases: openedCases, last_withdrawal_level: lastWithdrawalLevel } = result.rows[0];
   const friends = await client.query(`SELECT f.telegram_id AS id,
     COALESCE(SUM(t.amount) FILTER (WHERE t.type='purchase'),0)::int AS paid
     FROM users f LEFT JOIN transactions t ON t.user_id=f.telegram_id
@@ -230,7 +236,9 @@ export async function getWithdrawalAccess(userId: number, client: { query: (sql:
       SELECT 1 FROM withdrawal_referrals wr JOIN gift_withdrawals w ON w.id=wr.withdrawal_id
       WHERE wr.friend_id=f.telegram_id AND w.status IN ('pending','fulfilled'))
     GROUP BY f.telegram_id ORDER BY f.telegram_id`,[userId]);
-  return { paid, committed, availableXtr: paid-committed, referralCount,
+  const level = 1 + Math.floor(openedCases / 10);
+  const requiredLevel = lastWithdrawalLevel === null ? 1 : Number(lastWithdrawalLevel) + 1;
+  return { paid, committed, availableXtr: paid-committed, referralCount, openedCases, level, requiredLevel,
     friendPayments: friends.rows.map((row: any) => Number(row.paid)) };
 }
 
@@ -435,16 +443,17 @@ export async function requestGiftWithdrawal(userId: number, inventoryId: number)
     const item = await client.query(`SELECT * FROM gift_inventory WHERE id=$1 AND user_id=$2 FOR UPDATE`,[inventoryId,userId]);
     if (!item.rows[0] || item.rows[0].status !== "owned") throw new Error("gift_not_available");
     const access = await getWithdrawalAccess(userId, client);
+    if (access.level < access.requiredLevel) throw new Error("level_required");
     const value = Number(item.rows[0].display_value);
     const friendThreshold = Math.ceil(value / 5);
     const method = access.availableXtr >= value ? "purchase" : access.friendPayments.filter((paid: number) => paid >= friendThreshold).length >= 5 ? "referrals" : null;
     if (!method) throw new Error("withdrawal_locked");
-    const result = await client.query(`INSERT INTO gift_withdrawals(inventory_id,user_id,funding_method,committed_xtr)
-      VALUES($1,$2,$3,$4) ON CONFLICT (inventory_id) DO UPDATE
+    const result = await client.query(`INSERT INTO gift_withdrawals(inventory_id,user_id,funding_method,committed_xtr,level_snapshot)
+      VALUES($1,$2,$3,$4,$5) ON CONFLICT (inventory_id) DO UPDATE
       SET status='pending', reviewed_at=NULL, funding_method=EXCLUDED.funding_method,
-          committed_xtr=EXCLUDED.committed_xtr
+          committed_xtr=EXCLUDED.committed_xtr,level_snapshot=EXCLUDED.level_snapshot
       WHERE gift_withdrawals.status='reject' AND gift_withdrawals.user_id=EXCLUDED.user_id
-      RETURNING id`,[inventoryId,userId,method,method === "purchase" ? value : 0]);
+      RETURNING id`,[inventoryId,userId,method,method === "purchase" ? value : 0,access.level]);
     if (!result.rows[0]) throw new Error("gift_not_available");
     if (method === "referrals") {
       await client.query(`DELETE FROM withdrawal_referrals WHERE withdrawal_id=$1`, [result.rows[0].id]);
