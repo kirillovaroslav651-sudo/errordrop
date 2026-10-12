@@ -74,10 +74,10 @@ export const api = {
   addGallery: (giftId: string) => request<{ gallery: string[] }>("/api/gallery", { method: "POST", body: JSON.stringify({ giftId }) }),
   removeGallery: (giftId: string) => request<{ gallery: string[] }>(`/api/gallery/${encodeURIComponent(giftId)}`, { method: "DELETE" }),
   referrals: () => request<{ refCode: string; referrals: { username?: string; created_at: number }[] }>("/api/referrals"),
-  invoice: (packageId: string) =>
+  invoice: (amount: number) =>
     request<{ invoiceLink: string; payload: string }>("/api/invoice", {
       method: "POST",
-      body: JSON.stringify({ packageId }),
+      body: JSON.stringify({ amount }),
     }),
   bet: (amount: number, betId: string, game: string, choice?: string) =>
     request<{ won: boolean; delta: number; balance: number; outcome?: string; multiplier?: number }>("/api/bet", {

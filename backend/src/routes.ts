@@ -21,7 +21,6 @@ import {
   getWithdrawalAccess,
   adminRemoveStars,
   adminRemoveGift,
-  PACKAGES,
 } from "./db";
 import giftCatalog from "./giftCatalog.json";
 import { authGuard, requireAuth, TgUser } from "./auth";
@@ -270,14 +269,15 @@ router.post("/daily-bonus", requireAuth, async (req: any, res: Response) => {
 /** POST /api/invoice — создать invoice link для покупки XTR. */
 router.post("/invoice", requireAuth, async (req: any, res: Response) => {
   const u = req.auth.user as TgUser;
-  const pkg = PACKAGES.find((p) => p.id === req.body.packageId);
-  if (!pkg) return res.status(400).json({ ok: false, error: "invalid_package" });
+  const amount = toInt(req.body.amount);
+  if (!amount || amount < 50 || amount > 100000)
+    return res.status(400).json({ ok: false, error: "invalid_amount" });
 
   const payload = `o_${crypto.randomBytes(10).toString("hex")}`;
-  await createOrder(payload, u.id, pkg.id, pkg.amount);
+  await createOrder(payload, u.id, "custom", amount);
 
   try {
-    const invoiceLink = await createInvoiceLink(pkg.title, pkg.amount, payload);
+    const invoiceLink = await createInvoiceLink(`${amount} игровых звёзд ErrorDrop`, amount, payload);
     return res.json({ ok: true, data: { invoiceLink, payload } });
   } catch (err) {
     console.error("invoice error", err);
