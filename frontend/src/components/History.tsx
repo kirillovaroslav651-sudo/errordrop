@@ -7,6 +7,7 @@ const TYPE_LABEL: Record<Tx["type"], string> = {
   bet_lose: "🎰 Ставка",
   referral_bonus: "🤝 Реферал",
   admin_credit: "🪄 Бонус админа",
+  admin_debit: "🛠 Исправление баланса",
   daily_bonus: "🎁 Дневной бонус",
   case_open: "📦 Открытие кейса",
   case_reward: "⭐ Приз кейса",

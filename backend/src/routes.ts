@@ -19,6 +19,8 @@ import {
   sellInventoryGift,
   requestGiftWithdrawal,
   getWithdrawalAccess,
+  adminRemoveStars,
+  adminRemoveGift,
   PACKAGES,
 } from "./db";
 import giftCatalog from "./giftCatalog.json";
@@ -151,6 +153,38 @@ router.get("/admin/player", requireAuth, async (req: any, res: Response) => {
   const players = await Promise.all(found.rows.map(async u => ({ telegramId:Number(u.telegram_id),username:u.username,
     balance:Number(u.balance), inventory:await getInventory(Number(u.telegram_id)) })));
   res.json({ok:true,data:{players}});
+});
+
+router.post("/admin/player/:id/remove-stars", requireAuth, async (req: any, res: Response) => {
+  if (!isAdmin(req.auth.user.id)) return res.status(403).json({ok:false,error:"forbidden"});
+  const targetId = toInt(req.params.id), amount = toInt(req.body.amount);
+  const reason = typeof req.body.reason === "string" ? req.body.reason.trim() : "";
+  if (!targetId || !amount || amount < 1 || amount > 100000 || reason.length < 5 || reason.length > 300)
+    return res.status(400).json({ok:false,error:"invalid_correction"});
+  try { const balance = await adminRemoveStars(req.auth.user.id,targetId,amount,reason);
+    return res.json({ok:true,data:{balance}});
+  } catch(e:any) { const known=["user_not_found","insufficient_balance"].includes(e?.message);
+    return res.status(known?409:500).json({ok:false,error:known?e.message:"correction_failed"}); }
+});
+
+router.post("/admin/player/:id/remove-gift", requireAuth, async (req: any, res: Response) => {
+  if (!isAdmin(req.auth.user.id)) return res.status(403).json({ok:false,error:"forbidden"});
+  const targetId=toInt(req.params.id), inventoryId=toInt(req.body.inventoryId);
+  const reason=typeof req.body.reason === "string" ? req.body.reason.trim() : "";
+  if (!targetId || !inventoryId || reason.length < 5 || reason.length > 300)
+    return res.status(400).json({ok:false,error:"invalid_correction"});
+  try { await adminRemoveGift(req.auth.user.id,targetId,inventoryId,reason);
+    return res.json({ok:true,data:{removed:true}});
+  } catch(e:any) { return res.status(e?.message==="gift_not_available"?409:500)
+    .json({ok:false,error:e?.message==="gift_not_available"?e.message:"correction_failed"}); }
+});
+
+router.get("/admin/actions", requireAuth, async (req: any, res: Response) => {
+  if (!isAdmin(req.auth.user.id)) return res.status(403).json({ok:false,error:"forbidden"});
+  const actions=await db.query(`SELECT id,admin_id AS "adminId",target_id AS "targetId",action,amount,
+    inventory_id AS "inventoryId",reason,extract(epoch from created_at)::int AS "createdAt"
+    FROM admin_actions ORDER BY id DESC LIMIT 50`);
+  return res.json({ok:true,data:{actions:actions.rows}});
 });
 
 router.get("/admin/withdrawals", requireAuth, async (req: any, res: Response) => {

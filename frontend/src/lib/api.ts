@@ -13,7 +13,7 @@ function getInitData(): string {
 
 export type Tx = {
   id: number;
-  type: "purchase" | "first_purchase_bonus" | "bet_win" | "bet_lose" | "referral_bonus" | "admin_credit" | "daily_bonus" | "case_open" | "case_reward" | "gift_sale";
+  type: "purchase" | "first_purchase_bonus" | "bet_win" | "bet_lose" | "referral_bonus" | "admin_credit" | "admin_debit" | "daily_bonus" | "case_open" | "case_reward" | "gift_sale";
   amount: number;
   spin_result: "win" | "lose" | null;
   game: string | null;
@@ -37,10 +37,11 @@ export type MeData = {
   withdrawalAccess: { paid: number; wagered: number; qualifiedFriends: number; unlocked: boolean };
 };
 
-export type InventoryItem = { id: number; giftId: string; caseId: string; value: number; sellValue: number; status: "owned" | "sold" | "pending" | "withdrawn"; createdAt: number };
+export type InventoryItem = { id: number; giftId: string; caseId: string; value: number; sellValue: number; status: "owned" | "sold" | "pending" | "withdrawn" | "removed"; createdAt: number };
 export type CaseResult = { caseId: string; price: number; reward: { type: "stars" | "gift"; stars: number; giftId?: string; inventoryId?: number; value?: number }; balance: number };
 export type AdminPlayer = { telegramId: number; username: string | null; balance: number; inventory: InventoryItem[] };
 export type Withdrawal = { id: number; inventoryId: number; userId: number; status: string; giftId: string; username: string | null; createdAt: number };
+export type AdminAction = { id:number; adminId:number; targetId:number; action:string; amount:number|null; inventoryId:number|null; reason:string; createdAt:number };
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -65,6 +66,9 @@ export const api = {
   sellGift: (id: number) => request<{credited:number; inventory:InventoryItem[]}>(`/api/inventory/${id}/sell`, {method:"POST"}),
   withdrawGift: (id: number) => request<{requestId:number; inventory:InventoryItem[]}>(`/api/inventory/${id}/withdraw`, {method:"POST"}),
   adminPlayer: (q: string) => request<{players:AdminPlayer[]}>(`/api/admin/player?q=${encodeURIComponent(q)}`),
+  adminRemoveStars: (id:number,amount:number,reason:string) => request<{balance:number}>(`/api/admin/player/${id}/remove-stars`,{method:"POST",body:JSON.stringify({amount,reason})}),
+  adminRemoveGift: (id:number,inventoryId:number,reason:string) => request<{removed:boolean}>(`/api/admin/player/${id}/remove-gift`,{method:"POST",body:JSON.stringify({inventoryId,reason})}),
+  adminActions: () => request<{actions:AdminAction[]}>("/api/admin/actions"),
   adminWithdrawals: () => request<{requests:Withdrawal[]}>("/api/admin/withdrawals"),
   adminReview: (id:number, action:"reject"|"fulfilled") => request<{status:string}>(`/api/admin/withdrawals/${id}/review`,{method:"POST",body:JSON.stringify({action})}),
   addGallery: (giftId: string) => request<{ gallery: string[] }>("/api/gallery", { method: "POST", body: JSON.stringify({ giftId }) }),

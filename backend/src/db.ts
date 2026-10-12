@@ -42,7 +42,7 @@ export type TxType =
   | "bet_win"
   | "bet_lose"
   | "referral_bonus" | "first_purchase_bonus"
-  | "admin_credit"
+  | "admin_credit" | "admin_debit"
   | "daily_bonus" | "case_open" | "case_reward" | "gift_sale";
 
 export type CaseReward = { type: "stars" | "gift"; stars: number; giftId?: string; inventoryId?: number; value?: number };
@@ -146,6 +146,16 @@ export async function initDb() {
         status TEXT NOT NULL DEFAULT 'pending',
         created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
         reviewed_at TIMESTAMPTZ
+      );
+      CREATE TABLE IF NOT EXISTS admin_actions (
+        id BIGSERIAL PRIMARY KEY,
+        admin_id BIGINT NOT NULL,
+        target_id BIGINT NOT NULL,
+        action TEXT NOT NULL,
+        amount INTEGER,
+        inventory_id BIGINT,
+        reason TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
       );
     `);
 
@@ -413,6 +423,40 @@ export async function requestGiftWithdrawal(userId: number, inventoryId: number)
     await client.query("COMMIT");
     return Number(result.rows[0].id);
   } catch(e) { await client.query("ROLLBACK"); throw e; }
+  finally { client.release(); }
+}
+
+export async function adminRemoveStars(adminId: number, targetId: number, amount: number, reason: string) {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const user = await client.query(`SELECT balance FROM users WHERE telegram_id=$1 FOR UPDATE`, [targetId]);
+    if (!user.rows[0]) throw new Error("user_not_found");
+    if (Number(user.rows[0].balance) < amount) throw new Error("insufficient_balance");
+    const balance = Number(user.rows[0].balance) - amount;
+    await client.query(`UPDATE users SET balance=$1 WHERE telegram_id=$2`, [balance, targetId]);
+    await client.query(`INSERT INTO transactions(user_id,type,amount,ref) VALUES($1,'admin_debit',$2,$3)`,
+      [targetId,-amount,`admin-debit:${crypto.randomUUID()}`]);
+    await client.query(`INSERT INTO admin_actions(admin_id,target_id,action,amount,reason) VALUES($1,$2,'remove_stars',$3,$4)`,
+      [adminId,targetId,amount,reason]);
+    await client.query("COMMIT");
+    return balance;
+  } catch (e) { await client.query("ROLLBACK"); throw e; }
+  finally { client.release(); }
+}
+
+export async function adminRemoveGift(adminId: number, targetId: number, inventoryId: number, reason: string) {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query(`SELECT telegram_id FROM users WHERE telegram_id=$1 FOR UPDATE`, [targetId]);
+    const item = await client.query(`SELECT status FROM gift_inventory WHERE id=$1 AND user_id=$2 FOR UPDATE`, [inventoryId,targetId]);
+    if (!item.rows[0] || item.rows[0].status !== "owned") throw new Error("gift_not_available");
+    await client.query(`UPDATE gift_inventory SET status='removed',updated_at=now() WHERE id=$1`, [inventoryId]);
+    await client.query(`INSERT INTO admin_actions(admin_id,target_id,action,inventory_id,reason) VALUES($1,$2,'remove_gift',$3,$4)`,
+      [adminId,targetId,inventoryId,reason]);
+    await client.query("COMMIT");
+  } catch (e) { await client.query("ROLLBACK"); throw e; }
   finally { client.release(); }
 }
 
