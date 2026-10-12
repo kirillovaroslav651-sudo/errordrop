@@ -72,6 +72,11 @@ export async function initDb() {
         referred_by   BIGINT REFERENCES users(telegram_id),
         created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
       );
+      CREATE TABLE IF NOT EXISTS online_presence (
+        user_id BIGINT PRIMARY KEY REFERENCES users(telegram_id) ON DELETE CASCADE,
+        seen_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_online_presence_seen ON online_presence(seen_at);
       CREATE TABLE IF NOT EXISTS transactions (
         id          SERIAL PRIMARY KEY,
         user_id     BIGINT NOT NULL REFERENCES users(telegram_id),

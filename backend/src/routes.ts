@@ -67,6 +67,16 @@ router.get("/me", requireAuth, async (req: any, res: Response) => {
   });
 });
 
+/** Presence is a rolling 60-second count of active Mini App users, not bot subscribers. */
+router.post("/presence", requireAuth, async (req: any, res: Response) => {
+  await ensureUser(req.auth.user.id, req.auth.user.username);
+  await db.query(`INSERT INTO online_presence(user_id,seen_at) VALUES($1,now())
+    ON CONFLICT(user_id) DO UPDATE SET seen_at=now()`, [req.auth.user.id]);
+  const result = await db.query(`SELECT COUNT(*)::int AS online FROM online_presence
+    WHERE seen_at > now() - interval '60 seconds'`);
+  return res.json({ok:true,data:{online:Number(result.rows[0].online)}});
+});
+
 const giftIds = new Set(giftCatalog.map(gift => gift.id));
 router.get("/gift-prices", requireAuth, async (_req, res: Response) => {
   const result = await db.query(`SELECT gift_id AS id, stars, updated_at AS "updatedAt" FROM telegram_gift_prices`);

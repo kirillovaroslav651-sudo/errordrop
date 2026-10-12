@@ -41,6 +41,7 @@ export default function App() {
   const [filter,setFilter] = useState("Все");
   const [priceVersion,setPriceVersion] = useState(0);
   const [liveCount,setLiveCount] = useState(0);
+  const [onlineCount,setOnlineCount] = useState<number|null>(null);
   const [inventoryFilter,setInventoryFilter] = useState("Все");
   const [hackStep,setHackStep] = useState(0);
   const [dailyBusy,setDailyBusy] = useState(false);
@@ -84,6 +85,17 @@ export default function App() {
     finally{setLoading(false)}
   },[]);
   useEffect(()=>{void reload()},[reload]);
+  useEffect(()=>{
+    if(demo){setOnlineCount(1);return}
+    if(!me)return;
+    let active=true;
+    const beat=()=>{if(document.visibilityState!=="visible")return;
+      void api.presence().then(({online})=>{if(active)setOnlineCount(online)}).catch(()=>undefined)};
+    beat();
+    const timer=window.setInterval(beat,25000);
+    document.addEventListener("visibilitychange",beat);
+    return()=>{active=false;window.clearInterval(timer);document.removeEventListener("visibilitychange",beat)};
+  },[me?.user.telegramId]);
   useEffect(()=>{
     if(demo)return;
     let mounted=true;
@@ -245,7 +257,7 @@ export default function App() {
   return <div className={`app ${lessMotion?"reduce-effects":""}`}>
     <div className="ambient ambient-one"/><div className="ambient ambient-two"/><div className="glitch-atmosphere" aria-hidden="true"/>
     <header className="topbar"><button className="logo-button" onClick={()=>navigate("cases")} aria-label="ErrorDrop, на главную"><img src="/errordrop-avatar.png" alt=""/><span><b>ERROR<i>DROP</i></b><small>THE RED SIDE OF LUCK</small></span></button><button className="top-profile" onClick={()=>navigate("profile")}>{user?.username?`@${user.username}`:user?.first_name||"Профиль"}<span>↗</span></button></header>
-    <div className="wallet-bar"><div className="avatar">{(user?.first_name||user?.username||"E")[0].toUpperCase()}</div><div className="wallet-person"><b>{user?.first_name||user?.username||"Игрок"}</b><small>ID {me.user.telegramId}</small></div><div className="wallet-balance"><b>{me.user.balance.toLocaleString("ru-RU")}</b><span>⭐</span></div><button className="wallet-plus" onClick={()=>{feel();setBuyOpen(true)}} aria-label="Пополнить баланс">+</button></div>
+    <div className="wallet-bar"><div className="avatar">{(user?.first_name||user?.username||"E")[0].toUpperCase()}</div><div className="wallet-person"><b>{user?.first_name||user?.username||"Игрок"}</b><small>ID {me.user.telegramId}</small></div><div className="wallet-right"><div className="wallet-balance"><b>{me.user.balance.toLocaleString("ru-RU")}</b><span>⭐</span></div><div className="online-counter" title="Игроки, активные в Mini App за последнюю минуту"><i/>ОНЛАЙН {onlineCount===null?"—":onlineCount}</div></div><button className="wallet-plus" onClick={()=>{feel();setBuyOpen(true)}} aria-label="Пополнить баланс">+</button></div>
     <main className="screen" key={tab}>
       {tab==="cases"&&<><div className="screen-kicker"><span className="red-line"/> ERRORDROP / CASE ROOM <span className="season">СЕЗОН 01</span></div><h1 className="main-title">ТВОЙ ДРОП.<br/><em>ТВОИ ПРАВИЛА.</em></h1>
         <div className="carousel-heading"><div><small>ВЫБЕРИ КЕЙС</small><b>{cases.length} <span>ДОСТУПНО</span></b></div><span className="carousel-rule"/><span className="carousel-mark">◈</span></div>

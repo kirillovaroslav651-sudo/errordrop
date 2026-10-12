@@ -48,3 +48,5 @@
 .custom-topup{display:grid;gap:9px;color:#f4766c;font-size:11px;font-weight:800;letter-spacing:.06em}.custom-topup input{width:100%;padding:16px;background:#241d21;border:1px solid #805052;border-radius:14px;color:#fff;font:800 24px Unbounded,Manrope,sans-serif;outline:none}.custom-topup input:focus{border-color:#e53935;box-shadow:0 0 18px #e5393544}.topup-summary{font-size:12px;line-height:1.5;color:#c6b6b9}.topup-submit{width:100%;min-height:50px;background:#e53935}
 
 .admin-corrections{margin:16px 0;padding:12px;border:1px solid #654047;border-radius:13px;background:#21191d}.admin-corrections summary{cursor:pointer;color:#f18a7e;font-size:11px;font-weight:800}.admin-corrections p{margin-top:12px}.admin-corrections label{display:block;margin-top:10px}
+
+.wallet-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:0}.online-counter{display:flex;align-items:center;gap:4px;color:#b5a6a9;font-size:9px;font-weight:800;white-space:nowrap}.online-counter i{width:6px;height:6px;border-radius:50%;background:#51db90;box-shadow:0 0 8px #51db90}
