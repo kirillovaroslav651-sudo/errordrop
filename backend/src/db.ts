@@ -154,6 +154,8 @@ export async function initDb() {
         created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
         reviewed_at TIMESTAMPTZ
       );
+      ALTER TABLE gift_withdrawals ADD COLUMN IF NOT EXISTS funding_method TEXT;
+      ALTER TABLE gift_withdrawals ADD COLUMN IF NOT EXISTS committed_xtr INTEGER NOT NULL DEFAULT 0;
       CREATE TABLE IF NOT EXISTS admin_actions (
         id BIGSERIAL PRIMARY KEY,
         admin_id BIGINT NOT NULL,
@@ -209,16 +211,17 @@ export async function getUser(telegramId: number): Promise<any> {
   return getRawUser(telegramId);
 }
 
-/** Withdrawal access is based only on confirmed XTR payments, not admin/game credits. */
+/** Confirmed purchases and referrals available for individual gift requests. */
 export async function getWithdrawalAccess(userId: number, client: { query: (sql: string, params?: any[]) => Promise<any> } = pool) {
   const result = await client.query(`SELECT
     COALESCE((SELECT SUM(amount) FROM transactions WHERE user_id=$1 AND type='purchase'),0)::int AS paid,
-    COALESCE((SELECT -SUM(amount) FROM transactions WHERE user_id=$1 AND type='case_open'
-      AND created_at >= COALESCE((SELECT MIN(created_at) FROM transactions WHERE user_id=$1 AND type='purchase'), now())),0)::int AS wagered,
+    COALESCE((SELECT SUM(committed_xtr) FROM gift_withdrawals WHERE user_id=$1 AND status IN ('pending','fulfilled')),0)::int AS committed,
+    (SELECT COUNT(*)::int FROM gift_withdrawals WHERE user_id=$1 AND funding_method='referrals' AND status IN ('pending','fulfilled')) AS used_friend_groups,
     (SELECT COUNT(*)::int FROM users f WHERE f.referred_by=$1 AND
-      (SELECT COALESCE(SUM(amount),0) FROM transactions WHERE user_id=f.telegram_id AND type='purchase') >= 50) AS qualified_friends`, [userId]);
-  const { paid, wagered, qualified_friends: qualifiedFriends } = result.rows[0];
-  return { paid, wagered, qualifiedFriends, unlocked: (paid >= 500 && wagered >= 500) || qualifiedFriends >= 5 };
+      (SELECT COALESCE(SUM(amount),0) FROM transactions WHERE user_id=f.telegram_id AND type='purchase') >= 100) AS qualified_friends`, [userId]);
+  const { paid, committed, used_friend_groups: usedFriendGroups, qualified_friends: qualifiedFriends } = result.rows[0];
+  return { paid, committed, availableXtr: paid-committed, qualifiedFriends,
+    availableFriends: Math.max(0,qualifiedFriends-usedFriendGroups*5) };
 }
 
 /** Создать юзера при первом входе (upsert по telegram_id). */
@@ -416,10 +419,19 @@ export async function requestGiftWithdrawal(userId: number, inventoryId: number)
   try {
     await client.query("BEGIN");
     await client.query(`SELECT telegram_id FROM users WHERE telegram_id=$1 FOR UPDATE`, [userId]);
-    if (!(await getWithdrawalAccess(userId, client)).unlocked) throw new Error("withdrawal_locked");
     const item = await client.query(`SELECT * FROM gift_inventory WHERE id=$1 AND user_id=$2 FOR UPDATE`,[inventoryId,userId]);
     if (!item.rows[0] || item.rows[0].status !== "owned") throw new Error("gift_not_available");
-    const result = await client.query(`INSERT INTO gift_withdrawals(inventory_id,user_id) VALUES($1,$2) RETURNING id`,[inventoryId,userId]);
+    const access = await getWithdrawalAccess(userId, client);
+    const value = Number(item.rows[0].display_value);
+    const method = access.availableXtr >= value ? "purchase" : access.availableFriends >= 5 ? "referrals" : null;
+    if (!method) throw new Error("withdrawal_locked");
+    const result = await client.query(`INSERT INTO gift_withdrawals(inventory_id,user_id,funding_method,committed_xtr)
+      VALUES($1,$2,$3,$4) ON CONFLICT (inventory_id) DO UPDATE
+      SET status='pending', reviewed_at=NULL, funding_method=EXCLUDED.funding_method,
+          committed_xtr=EXCLUDED.committed_xtr
+      WHERE gift_withdrawals.status='reject' AND gift_withdrawals.user_id=EXCLUDED.user_id
+      RETURNING id`,[inventoryId,userId,method,method === "purchase" ? value : 0]);
+    if (!result.rows[0]) throw new Error("gift_not_available");
     await client.query(`UPDATE gift_inventory SET status='pending',updated_at=now() WHERE id=$1`,[inventoryId]);
     await client.query("COMMIT");
     return Number(result.rows[0].id);
