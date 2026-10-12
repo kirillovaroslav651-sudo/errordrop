@@ -385,8 +385,8 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     const outcome = outcomes.find(item => (cursor += item.chance) > pick) ?? outcomes[0];
     let reward: CaseReward;
     // Smaller cases pay ordinary outcomes as Stars; high-tier cases
-    // (2499/4999) deliver gifts near their configured outcome value.
-    const highTierGift = c.id === "blackout" || c.id === "ultraviolet";
+    // (999/2499/4999) deliver gifts near their configured outcome value.
+    const highTierGift = c.id === "pulse" || c.id === "blackout" || c.id === "ultraviolet";
     if (!giftRoll && !highTierGift) {
       reward = { type: "stars", stars: outcome?.stars ?? c.price };
     } else {
