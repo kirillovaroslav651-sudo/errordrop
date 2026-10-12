@@ -358,17 +358,14 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     let cursor = 0;
     const outcome = outcomes.find(item => (cursor += item.chance) > pick) ?? outcomes[0];
     let reward: CaseReward;
-    // Early cases preserve their configured star outcomes. Only the bonus
-    // branch grants a gift; high-tier cases continue to grant catalog gifts.
-    const earlyCase = c.id === "spark" || c.id === "redline";
-    if (earlyCase && !giftRoll) {
+    // Every configured ordinary outcome is an in-game Stars payout.
+    // Gifts are exclusively the separately weighted bonus branch.
+    if (!giftRoll) {
       reward = { type: "stars", stars: outcome?.stars ?? c.price };
     } else {
-    const target = giftRoll
-      ? c.price + crypto.randomInt(Math.max(1, (c.bonusMax ?? c.price) - c.price + 1))
-      : (outcome?.stars ?? c.price);
-    const minValue = Math.max(1, Math.floor(target * 0.8));
-    const maxValue = Math.max(minValue, Math.ceil(target * 1.2));
+    const target = c.price + crypto.randomInt(Math.max(1, (c.bonusMax ?? c.price) - c.price + 1));
+    const minValue = Math.max(c.price, Math.floor(target * 0.8));
+    const maxValue = Math.min(c.bonusMax ?? c.price, Math.ceil(target * 1.2));
     const currentGifts = playableGifts();
     const candidates = currentGifts.filter(g => g.value >= minValue && g.value <= maxValue);
     // Never replace a low-value outcome with the nearest (often much more
