@@ -42,6 +42,7 @@ export async function createBot(): Promise<Telegraf> {
     const ref = refCode ? await db.query(`SELECT telegram_id FROM users WHERE ref_code = $1`, [refCode]) : null;
     const refId = ref?.rows[0] ? Number(ref.rows[0].telegram_id) : null;
     await ensureUser(ctx.from.id, ctx.from.username, refId !== ctx.from.id ? refId : null);
+    await db.query(`UPDATE users SET daily_reminders=TRUE WHERE telegram_id=$1`, [ctx.from.id]);
 
     if (!httpsOk) {
       return ctx.reply(
@@ -61,6 +62,16 @@ export async function createBot(): Promise<Telegraf> {
       'Открывай кейсы, получай игровые звёзды <tg-emoji emoji-id="6028338546736107668">⭐</tg-emoji> и приглашай друзей.',
       { ...markup, parse_mode: "HTML" }
     ).catch(() => ctx.reply("🎁 Добро пожаловать в ErrorDrop! Открывай кейсы и приглашай друзей.", markup));
+  });
+
+  bot.command("mute", async ctx => {
+    await db.query(`UPDATE users SET daily_reminders=FALSE WHERE telegram_id=$1`, [ctx.from.id]);
+    await ctx.reply("Напоминания о бесплатном кейсе отключены. Вернуть: /unmute");
+  });
+  bot.command("unmute", async ctx => {
+    await ensureUser(ctx.from.id, ctx.from.username);
+    await db.query(`UPDATE users SET daily_reminders=TRUE WHERE telegram_id=$1`, [ctx.from.id]);
+    await ctx.reply("Напоминания о бесплатном кейсе включены. Отключить: /mute");
   });
 
   // Обработчик успешной оплаты.

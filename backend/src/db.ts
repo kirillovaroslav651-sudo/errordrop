@@ -101,6 +101,13 @@ export async function initDb() {
         user_id     BIGINT PRIMARY KEY,
         last_day    TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS daily_case_notifications (
+        user_id BIGINT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+        day TEXT NOT NULL,
+        sent_at TIMESTAMPTZ,
+        PRIMARY KEY (user_id, day)
+      );
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS daily_reminders BOOLEAN NOT NULL DEFAULT TRUE;
       CREATE TABLE IF NOT EXISTS gift_gallery (
         user_id BIGINT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
         gift_id TEXT NOT NULL,

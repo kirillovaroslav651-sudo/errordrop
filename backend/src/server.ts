@@ -7,6 +7,7 @@ import apiRouter from "./routes";
 import { initDb } from "./db";
 import { createBot } from "./bot";
 import { startTelegramPriceSync } from "./telegramPrices";
+import { startDailyReminders } from "./dailyReminders";
 import { Telegraf } from "telegraf";
 
 const app = express();
@@ -42,6 +43,7 @@ async function start() {
   await initDb();
   startTelegramPriceSync();
   const bot = await createBot();
+  startDailyReminders(bot, process.env.WEBAPP_URL || PUBLIC);
 
   if (MODE === "webhook") {
     const secret = process.env.WEBHOOK_SECRET;
