@@ -29,6 +29,7 @@ export const PACKAGES: Package[] = [
   { id: "pkg-50", amount: 50, title: "50 звёзд" },
   { id: "pkg-100", amount: 100, title: "100 звёзд" },
   { id: "pkg-250", amount: 250, title: "250 звёзд" },
+  { id: "pkg-300", amount: 300, title: "300 звёзд" },
   { id: "pkg-500", amount: 500, title: "500 звёзд" },
 ];
 
@@ -40,7 +41,7 @@ export type TxType =
   | "purchase"
   | "bet_win"
   | "bet_lose"
-  | "referral_bonus"
+  | "referral_bonus" | "first_purchase_bonus"
   | "admin_credit"
   | "daily_bonus" | "case_open" | "case_reward" | "gift_sale";
 
@@ -514,6 +515,39 @@ export async function getOrder(payload: string): Promise<any> {
 
 export async function markOrderPaid(payload: string): Promise<void> {
   await pool.query(`UPDATE orders SET status = 'paid' WHERE payload = $1`, [payload]);
+}
+
+/** Credit a confirmed XTR payment exactly once, including first-purchase bonus. */
+export async function settlePaidOrder(payload: string, chargeId: string, paidAmount: number): Promise<boolean> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const orderResult = await client.query(`SELECT * FROM orders WHERE payload=$1 FOR UPDATE`, [payload]);
+    const order = orderResult.rows[0];
+    if (!order || Number(order.amount) !== paidAmount || !chargeId) throw new Error("invalid_payment");
+    if (order.status === "paid") { await client.query("COMMIT"); return false; }
+    const userId = Number(order.user_id);
+    const userResult = await client.query(`SELECT referred_by FROM users WHERE telegram_id=$1 FOR UPDATE`, [userId]);
+    if (!userResult.rows[0]) throw new Error("user_not_found");
+    const previous = await client.query(`SELECT 1 FROM transactions WHERE user_id=$1 AND type='purchase' LIMIT 1`, [userId]);
+    const firstBonus = previous.rows.length ? 0 : Math.floor(paidAmount / 2);
+    await client.query(`UPDATE users SET balance=balance+$1 WHERE telegram_id=$2`, [paidAmount+firstBonus,userId]);
+    await client.query(`INSERT INTO transactions(user_id,type,amount,ref) VALUES($1,'purchase',$2,$3)`,
+      [userId,paidAmount,`purchase:${chargeId}`]);
+    if (firstBonus) await client.query(`INSERT INTO transactions(user_id,type,amount,ref)
+      VALUES($1,'first_purchase_bonus',$2,$3)`, [userId,firstBonus,`first-bonus:${payload}`]);
+    const referrer = userResult.rows[0].referred_by;
+    if (referrer) {
+      const referralBonus = Math.round(paidAmount * REFERRAL_PERCENT / 100);
+      await client.query(`UPDATE users SET balance=balance+$1 WHERE telegram_id=$2`, [referralBonus,referrer]);
+      await client.query(`INSERT INTO transactions(user_id,type,amount,ref)
+        VALUES($1,'referral_bonus',$2,$3)`, [referrer,referralBonus,`referral:${payload}`]);
+    }
+    await client.query(`UPDATE orders SET status='paid' WHERE payload=$1`,[payload]);
+    await client.query("COMMIT");
+    return true;
+  } catch (e) { await client.query("ROLLBACK"); throw e; }
+  finally { client.release(); }
 }
 
 /** Московская дата (YYYY-MM-DD). */

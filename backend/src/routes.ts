@@ -9,8 +9,7 @@ import {
   adminCredit,
   grantReferralBonus,
   createOrder,
-  getOrder,
-  markOrderPaid,
+  settlePaidOrder,
   applyTx,
   claimDailyBonus,
   moscowDay,
@@ -295,22 +294,9 @@ export async function handlePaymentUpdate(msg: {
   const payment = msg.successful_payment;
   if (!payment) return;
 
-  const payload = payment.invoice_payload ?? "";
-  const order = await getOrder(payload);
-  if (!order) return;
-
-  if (order.status === "paid") return;
-  if (Number(order.amount) !== Number(payment.total_amount)) return;
-
-  const ref = `${order.user_id}:${payment.telegram_payment_charge_id ?? payload}`;
-  await applyTx(order.user_id, "purchase", order.amount, { ref });
-  await markOrderPaid(payload);
-
-  const me = await getUser(order.user_id);
-  if (me?.referred_by) {
-    await grantReferralBonus(me.referred_by, order.amount);
-  }
-  console.log(`✅ пополнено ${order.amount} звёзд юзеру ${order.user_id}`);
+  const settled = await settlePaidOrder(payment.invoice_payload ?? "",
+    payment.telegram_payment_charge_id ?? "", Number(payment.total_amount));
+  if (settled) console.log("✅ платёж зачислен", payment.invoice_payload);
 }
 
 async function countReferrals(userId: number): Promise<number> {

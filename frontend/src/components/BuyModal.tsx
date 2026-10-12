@@ -6,6 +6,7 @@ const PACKAGES = [
   { id: "pkg-50", amount: 50, emoji: "💎" },
   { id: "pkg-100", amount: 100, emoji: "💠" },
   { id: "pkg-250", amount: 250, emoji: "🔮" },
+  { id: "pkg-300", amount: 300, emoji: "🎁" },
   { id: "pkg-500", amount: 500, emoji: "👑" },
 ];
 
@@ -54,13 +55,14 @@ export default function BuyModal({ onClose, onPurchased }: Props) {
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="modal-top"><small>ERRORDROP / BALANCE</small><button disabled={busy} onClick={onClose} aria-label="Закрыть">×</button></div>
         <h3>ПОПОЛНИТЬ БАЛАНС</h3>
-        <p className="sub">Оплата настоящими Telegram Stars (XTR) начисляет <b>игровые ⭐</b> внутри ErrorDrop. Их нельзя вывести, обменять на Telegram Stars или NFT. 10% игровых ⭐ от пополнений друзей — бонус пригласившему.</p>
+        <p className="sub">Оплата настоящими Telegram Stars (XTR) начисляет <b>игровые ⭐</b> внутри ErrorDrop. При первом успешном пополнении начисляется ещё 50% игровых ⭐ (например, 300 XTR → 450 игровых ⭐). Игровые ⭐ нельзя вывести или обменять на Telegram Stars. 10% от оплаты друга начисляется пригласившему игровыми ⭐.</p>
 
         <div className="pkg-grid">
           {PACKAGES.map((p) => (
             <button type="button" key={p.id} className="pkg" disabled={busy} onClick={() => buy(p.id)}>
               <span style={{ fontSize: 30 }}>{p.emoji}</span>
               <span className="amt">+{p.amount} игровых ⭐</span>
+              <small>Первое пополнение: +{Math.floor(p.amount/2)} бонусных ⭐</small>
               <span className="pkg-cost">Оплатить {p.amount} XTR</span>
             </button>
           ))}

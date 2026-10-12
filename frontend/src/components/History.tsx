@@ -2,6 +2,7 @@ import { Tx } from "../lib/api";
 
 const TYPE_LABEL: Record<Tx["type"], string> = {
   purchase: "💎 Покупка",
+  first_purchase_bonus: "🎁 Бонус первого пополнения",
   bet_win: "🎰 Выигрыш",
   bet_lose: "🎰 Ставка",
   referral_bonus: "🤝 Реферал",

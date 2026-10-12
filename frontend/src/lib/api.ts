@@ -13,7 +13,7 @@ function getInitData(): string {
 
 export type Tx = {
   id: number;
-  type: "purchase" | "bet_win" | "bet_lose" | "referral_bonus" | "admin_credit" | "daily_bonus" | "case_open" | "case_reward" | "gift_sale";
+  type: "purchase" | "first_purchase_bonus" | "bet_win" | "bet_lose" | "referral_bonus" | "admin_credit" | "daily_bonus" | "case_open" | "case_reward" | "gift_sale";
   amount: number;
   spin_result: "win" | "lose" | null;
   game: string | null;
