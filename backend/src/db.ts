@@ -371,16 +371,13 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     const maxValue = Math.max(minValue, Math.ceil(target * 1.2));
     const currentGifts = playableGifts();
     const candidates = currentGifts.filter(g => g.value >= minValue && g.value <= maxValue);
-    // Never grant an out-of-range 'profitable' gift by falling back to the
-    // cheapest catalog item when the intended early-case bonus is unavailable.
-    if (earlyCase && giftRoll && candidates.length === 0) {
+    // Never replace a low-value outcome with the nearest (often much more
+    // expensive) catalog gift. If the market has no gift in this band,
+    // credit the outcome as in-game stars instead.
+    if (candidates.length === 0) {
       reward = { type: "stars", stars: target };
     } else {
-    const poolForCase = candidates.length
-      ? candidates
-      : [...currentGifts].sort((a, b) => Math.abs(a.value - target) - Math.abs(b.value - target)).slice(0, 12);
-    if (!poolForCase.length) throw new Error("no_gifts_available");
-    const g = poolForCase[crypto.randomInt(poolForCase.length)];
+    const g = candidates[crypto.randomInt(candidates.length)];
     const sellValue = g.value;
     const inv = await client.query(`INSERT INTO gift_inventory(user_id,gift_id,case_id,display_value,sell_value)
       VALUES($1,$2,$3,$4,$5) RETURNING id`, [userId,g.id,caseId,g.value,sellValue]);
