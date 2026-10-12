@@ -156,6 +156,11 @@ export async function initDb() {
       );
       ALTER TABLE gift_withdrawals ADD COLUMN IF NOT EXISTS funding_method TEXT;
       ALTER TABLE gift_withdrawals ADD COLUMN IF NOT EXISTS committed_xtr INTEGER NOT NULL DEFAULT 0;
+      CREATE TABLE IF NOT EXISTS withdrawal_referrals (
+        withdrawal_id BIGINT NOT NULL REFERENCES gift_withdrawals(id),
+        friend_id BIGINT NOT NULL REFERENCES users(telegram_id),
+        PRIMARY KEY (withdrawal_id, friend_id)
+      );
       CREATE TABLE IF NOT EXISTS admin_actions (
         id BIGSERIAL PRIMARY KEY,
         admin_id BIGINT NOT NULL,
@@ -216,12 +221,17 @@ export async function getWithdrawalAccess(userId: number, client: { query: (sql:
   const result = await client.query(`SELECT
     COALESCE((SELECT SUM(amount) FROM transactions WHERE user_id=$1 AND type='purchase'),0)::int AS paid,
     COALESCE((SELECT SUM(committed_xtr) FROM gift_withdrawals WHERE user_id=$1 AND status IN ('pending','fulfilled')),0)::int AS committed,
-    (SELECT COUNT(*)::int FROM gift_withdrawals WHERE user_id=$1 AND funding_method='referrals' AND status IN ('pending','fulfilled')) AS used_friend_groups,
-    (SELECT COUNT(*)::int FROM users f WHERE f.referred_by=$1 AND
-      (SELECT COALESCE(SUM(amount),0) FROM transactions WHERE user_id=f.telegram_id AND type='purchase') >= 100) AS qualified_friends`, [userId]);
-  const { paid, committed, used_friend_groups: usedFriendGroups, qualified_friends: qualifiedFriends } = result.rows[0];
-  return { paid, committed, availableXtr: paid-committed, qualifiedFriends,
-    availableFriends: Math.max(0,qualifiedFriends-usedFriendGroups*5) };
+    (SELECT COUNT(*)::int FROM users WHERE referred_by=$1) AS referral_count`, [userId]);
+  const { paid, committed, referral_count: referralCount } = result.rows[0];
+  const friends = await client.query(`SELECT f.telegram_id AS id,
+    COALESCE(SUM(t.amount) FILTER (WHERE t.type='purchase'),0)::int AS paid
+    FROM users f LEFT JOIN transactions t ON t.user_id=f.telegram_id
+    WHERE f.referred_by=$1 AND NOT EXISTS (
+      SELECT 1 FROM withdrawal_referrals wr JOIN gift_withdrawals w ON w.id=wr.withdrawal_id
+      WHERE wr.friend_id=f.telegram_id AND w.status IN ('pending','fulfilled'))
+    GROUP BY f.telegram_id ORDER BY f.telegram_id`,[userId]);
+  return { paid, committed, availableXtr: paid-committed, referralCount,
+    friendPayments: friends.rows.map((row: any) => Number(row.paid)) };
 }
 
 /** Создать юзера при первом входе (upsert по telegram_id). */
@@ -361,14 +371,17 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     let cursor = 0;
     const outcome = outcomes.find(item => (cursor += item.chance) > pick) ?? outcomes[0];
     let reward: CaseReward;
-    // Every configured ordinary outcome is an in-game Stars payout.
-    // Gifts are exclusively the separately weighted bonus branch.
-    if (!giftRoll) {
+    // Smaller cases pay ordinary outcomes as Stars; high-tier cases
+    // (2499/4999) deliver gifts near their configured outcome value.
+    const highTierGift = c.id === "blackout" || c.id === "ultraviolet";
+    if (!giftRoll && !highTierGift) {
       reward = { type: "stars", stars: outcome?.stars ?? c.price };
     } else {
-    const target = c.price + crypto.randomInt(Math.max(1, (c.bonusMax ?? c.price) - c.price + 1));
-    const minValue = Math.max(c.price, Math.floor(target * 0.8));
-    const maxValue = Math.min(c.bonusMax ?? c.price, Math.ceil(target * 1.2));
+    const target = giftRoll
+      ? c.price + crypto.randomInt(Math.max(1, (c.bonusMax ?? c.price) - c.price + 1))
+      : (outcome?.stars ?? c.price);
+    const minValue = giftRoll ? Math.max(c.price, Math.floor(target * 0.8)) : Math.max(1, Math.floor(target * 0.8));
+    const maxValue = giftRoll ? Math.min(c.bonusMax ?? c.price, Math.ceil(target * 1.2)) : Math.ceil(target * 1.2);
     const currentGifts = playableGifts();
     const candidates = currentGifts.filter(g => g.value >= minValue && g.value <= maxValue);
     // Never replace a low-value outcome with the nearest (often much more
@@ -423,7 +436,8 @@ export async function requestGiftWithdrawal(userId: number, inventoryId: number)
     if (!item.rows[0] || item.rows[0].status !== "owned") throw new Error("gift_not_available");
     const access = await getWithdrawalAccess(userId, client);
     const value = Number(item.rows[0].display_value);
-    const method = access.availableXtr >= value ? "purchase" : access.availableFriends >= 5 ? "referrals" : null;
+    const friendThreshold = Math.ceil(value / 5);
+    const method = access.availableXtr >= value ? "purchase" : access.friendPayments.filter((paid: number) => paid >= friendThreshold).length >= 5 ? "referrals" : null;
     if (!method) throw new Error("withdrawal_locked");
     const result = await client.query(`INSERT INTO gift_withdrawals(inventory_id,user_id,funding_method,committed_xtr)
       VALUES($1,$2,$3,$4) ON CONFLICT (inventory_id) DO UPDATE
@@ -432,6 +446,17 @@ export async function requestGiftWithdrawal(userId: number, inventoryId: number)
       WHERE gift_withdrawals.status='reject' AND gift_withdrawals.user_id=EXCLUDED.user_id
       RETURNING id`,[inventoryId,userId,method,method === "purchase" ? value : 0]);
     if (!result.rows[0]) throw new Error("gift_not_available");
+    if (method === "referrals") {
+      await client.query(`DELETE FROM withdrawal_referrals WHERE withdrawal_id=$1`, [result.rows[0].id]);
+      const assigned = await client.query(`INSERT INTO withdrawal_referrals(withdrawal_id,friend_id)
+        SELECT $1,f.telegram_id FROM users f WHERE f.referred_by=$2
+        AND (SELECT COALESCE(SUM(amount),0) FROM transactions
+             WHERE user_id=f.telegram_id AND type='purchase') >= $3
+        AND NOT EXISTS (SELECT 1 FROM withdrawal_referrals wr JOIN gift_withdrawals w ON w.id=wr.withdrawal_id
+                        WHERE wr.friend_id=f.telegram_id AND w.status IN ('pending','fulfilled') AND w.id<>$1)
+        ORDER BY f.telegram_id LIMIT 5`,[result.rows[0].id,userId,friendThreshold]);
+      if (assigned.rowCount !== 5) throw new Error("withdrawal_locked");
+    }
     await client.query(`UPDATE gift_inventory SET status='pending',updated_at=now() WHERE id=$1`,[inventoryId]);
     await client.query("COMMIT");
     return Number(result.rows[0].id);
