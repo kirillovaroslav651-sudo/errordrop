@@ -6,6 +6,7 @@ import fs from "fs";
 import apiRouter from "./routes";
 import { initDb } from "./db";
 import { createBot } from "./bot";
+import { startTelegramPriceSync } from "./telegramPrices";
 import { Telegraf } from "telegraf";
 
 const app = express();
@@ -39,6 +40,7 @@ const PUBLIC = BASE_URL || process.env.WEBAPP_URL || "";
 
 async function start() {
   await initDb();
+  startTelegramPriceSync();
   const bot = await createBot();
 
   if (MODE === "webhook") {

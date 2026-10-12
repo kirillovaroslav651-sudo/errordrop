@@ -66,6 +66,10 @@ router.get("/me", requireAuth, async (req: any, res: Response) => {
 });
 
 const giftIds = new Set(giftCatalog.map(gift => gift.id));
+router.get("/gift-prices", requireAuth, async (_req, res: Response) => {
+  const result = await db.query(`SELECT gift_id AS id, stars, updated_at AS "updatedAt" FROM telegram_gift_prices`);
+  res.json({ ok: true, data: { prices: result.rows } });
+});
 router.post("/gallery", requireAuth, async (req: any, res: Response) => {
   const giftId = req.body.giftId;
   if (typeof giftId !== "string" || !giftIds.has(giftId)) return res.status(400).json({ ok: false, error: "invalid_gift" });

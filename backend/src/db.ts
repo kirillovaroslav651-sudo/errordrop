@@ -46,8 +46,17 @@ export type TxType =
 
 export type CaseReward = { type: "stars" | "gift"; stars: number; giftId?: string; inventoryId?: number; value?: number };
 export type CaseOpenResult = { caseId: string; price: number; reward: CaseReward; balance: number };
-const playableGifts = giftCatalog.map(g => ({ ...g, value: giftStarValue(g.price, g.currency) }))
+let liveGiftPrices: Record<string, number> = {};
+export function setLiveGiftPrices(prices: Record<string, number>) { liveGiftPrices = prices; }
+export function effectiveGiftPrice(id: string): number | null {
+  const override = liveGiftPrices[id];
+  if (Number.isSafeInteger(override) && override > 0) return override;
+  const gift = giftCatalog.find(g => g.id === id);
+  return gift ? giftStarValue(gift.price, gift.currency) : null;
+}
+const basePlayableGifts = giftCatalog.map(g => ({ ...g, value: giftStarValue(g.price, g.currency) }))
   .filter((g): g is typeof g & { value: number } => g.value !== null);
+function playableGifts() { return basePlayableGifts.map(g => ({ ...g, value: liveGiftPrices[g.id] ?? g.value })); }
 
 /** Инициализация схемы (idempotent). */
 export async function initDb() {
@@ -108,6 +117,12 @@ export async function initDb() {
         created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
       );
+      CREATE TABLE IF NOT EXISTS telegram_gift_prices (
+        gift_id TEXT PRIMARY KEY,
+        stars INTEGER NOT NULL CHECK (stars > 0),
+        telegram_gift_id TEXT NOT NULL,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
       -- Gift sales use the displayed in-game value. Repair older rows that
       -- were created with the previous 10% resale rule.
       UPDATE gift_inventory SET sell_value = display_value WHERE sell_value < display_value;
@@ -135,7 +150,9 @@ export async function initDb() {
 
     // Reprice owned inventory to the current catalogue snapshot. Historical sold
     // items and pending withdrawals remain untouched; no balance is changed.
-    const currentPrices = playableGifts.map(g => ({ id: g.id, value: g.value }));
+    const savedPrices = await client.query(`SELECT gift_id, stars FROM telegram_gift_prices`);
+    setLiveGiftPrices(Object.fromEntries(savedPrices.rows.map(row => [row.gift_id, Number(row.stars)])));
+    const currentPrices = playableGifts().map(g => ({ id: g.id, value: g.value }));
     await client.query(`
       UPDATE gift_inventory AS i SET display_value = p.value,
         sell_value = p.value, updated_at = now()
@@ -322,7 +339,8 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
       : (outcome?.stars ?? c.price);
     const minValue = Math.max(1, Math.floor(target * 0.8));
     const maxValue = Math.max(minValue, Math.ceil(target * 1.2));
-    const candidates = playableGifts.filter(g => g.value >= minValue && g.value <= maxValue);
+    const currentGifts = playableGifts();
+    const candidates = currentGifts.filter(g => g.value >= minValue && g.value <= maxValue);
     // Never grant an out-of-range 'profitable' gift by falling back to the
     // cheapest catalog item when the intended early-case bonus is unavailable.
     if (earlyCase && giftRoll && candidates.length === 0) {
@@ -330,7 +348,7 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     } else {
     const poolForCase = candidates.length
       ? candidates
-      : [...playableGifts].sort((a, b) => Math.abs(a.value - target) - Math.abs(b.value - target)).slice(0, 12);
+      : [...currentGifts].sort((a, b) => Math.abs(a.value - target) - Math.abs(b.value - target)).slice(0, 12);
     if (!poolForCase.length) throw new Error("no_gifts_available");
     const g = poolForCase[crypto.randomInt(poolForCase.length)];
     const sellValue = g.value;
