@@ -18,7 +18,7 @@ let telegramPriceOverrides: Record<string, number> = {};
 const starValue = (g: Gift) => telegramPriceOverrides[g.id] ?? giftStarValue(g.price, g.currency);
 const priceText = (g: Gift) => { const n=starValue(g); return n === null ? "Цена не определена" : `${telegramPriceOverrides[g.id]?"Telegram минимум":"≈ оценка"} ${n.toLocaleString("ru-RU")} ⭐`; };
 const demo = import.meta.env.DEV && new URLSearchParams(location.search).has("preview");
-const demoMe: MeData = { user: { telegramId:5009533742,username:"errordrop",balance:2460,refCode:"f00dbabe",isAdmin:true,referralCount:8,dailyBonusReady:true }, transactions:[],gallery:[],inventory:[] };
+const demoMe: MeData = { user: { telegramId:5009533742,username:"errordrop",balance:2460,refCode:"f00dbabe",isAdmin:true,referralCount:8,dailyBonusReady:true }, transactions:[],gallery:[],inventory:[],withdrawalAccess:{paid:500,wagered:500,qualifiedFriends:0,unlocked:true} };
 const delay = (ms:number) => new Promise<void>(resolve=>setTimeout(resolve,ms));
 
 export default function App() {
@@ -185,11 +185,12 @@ export default function App() {
     }catch(e:any){setError(e.message||"Не удалось продать")}
   }
   async function withdraw(item:InventoryItem){
+    if(!me?.withdrawalAccess.unlocked){setError("Вывод откроется после пополнения от 500 XTR И открытия кейсов на 500 игровых ⭐ после первого пополнения — ИЛИ после 5 друзей, каждый из которых пополнит от 50 XTR.");return}
     if(!window.confirm("Создать заявку на РУЧНОЙ вывод? Это не мгновенная передача NFT. Администратор проверит наличие реального подарка; при отказе он вернётся в игровой инвентарь."))return;
     try{if(demo)setMe(m=>m?{...m,inventory:m.inventory.map(i=>i.id===item.id?{...i,status:"pending"}:i)}:m);
       else{await api.withdrawGift(item.id);await reload()}
       notify("Заявка создана — ожидает ручной проверки")
-    }catch(e:any){setError(e.message||"Не удалось отправить заявку")}
+    }catch(e:any){setError(e.message==="withdrawal_locked"?"Условия вывода пока не выполнены. Проверь прогресс в инвентаре.":e.message||"Не удалось отправить заявку")}
   }
   async function grant(){
     const n=Number(amount), recipient=target.trim().replace(/^@/,"");
@@ -234,6 +235,7 @@ export default function App() {
       </>}
       {tab==="pass"&&<><div className="screen-kicker"><span className="red-line"/> DAILY / 01</div><h1 className="main-title">ВОЗВРАЩАЙСЯ.<br/><em>ЗАБИРАЙ СВОЁ.</em></h1><div className="pass-hero"><span>01 / ЕЖЕДНЕВНЫЙ КЕЙС</span><div className="pass-gift">✦</div><b>+5 <i>★</i></b><p>Ровно 5 игровых звёзд раз в сутки. Этот бонус общий с бесплатным кейсом.</p><div className="hack-game"><small>ВЗЛОМ СИСТЕМЫ / {Math.min(hackStep,3)} из 3</small><div className="hack-field">{me.user.dailyBonusReady&&!dailyBusy?<button className={`hack-target step-${hackStep}`} onClick={tapHack} aria-label={`Найти квадрат ${hackStep+1} из 3`}>✕</button>:<span>{dailyBusy?"ПРОВЕРКА ДОСТУПА…":"ДОСТУП ЗАКРЫТ ДО ЗАВТРА"}</span>}</div></div><p>Найди и нажми три красных квадрата. Награда будет начислена сервером один раз за сутки.</p></div><section className="panel history-panel"><h2>ИСТОРИЯ</h2><History transactions={me.transactions}/></section></>}
       {tab==="inventory"&&<><div className="screen-kicker"><span className="red-line"/> INVENTORY / {inventory.length}</div><h1 className="main-title">ТВОЙ<br/><em>ИНВЕНТАРЬ.</em></h1><p className="catalog-intro">Звёздные призы сразу попадают на игровой баланс и отражаются в истории. Выпавшие подарки сохраняются здесь в базе по твоему Telegram ID. Это игровые записи, а не подтверждение владения Telegram NFT.</p>
+        <section className="panel" style={{padding:16,marginBottom:16}}><strong>ДОСТУП К РУЧНОМУ ВЫВОДУ · УРОВЕНЬ 2</strong><p>Для подачи заявки нужны оба условия: пополнить суммарно 500 настоящих Telegram Stars (XTR) и после первого пополнения открыть кейсы суммарно на 500 игровых ⭐. Альтернатива: пригласить 5 друзей, каждый должен пополнить от 50 XTR. Игровые бонусы и начисления админа не считаются пополнением. После открытия доступ сохраняется; каждый подарок выводится по отдельной заявке.</p><small>Пополнено: {me.withdrawalAccess.paid}/500 XTR · Отыграно: {me.withdrawalAccess.wagered}/500 игровых ⭐ · Друзья: {me.withdrawalAccess.qualifiedFriends}/5 · {me.withdrawalAccess.unlocked?"ДОСТУП ОТКРЫТ":"ДОСТУП ЗАКРЫТ"}</small></section>
         {!inventory.length?<div className="gift-empty"><span>◇</span><strong>ПОКА НЕТ ПОДАРКОВ</strong><p>Открой платный кейс, чтобы получить первый игровой подарок.</p><button onClick={()=>navigate("cases")}>К КЕЙСАМ →</button></div>:<><div className="inventory-filters" role="group" aria-label="Фильтр инвентаря">{["Все","На продажу","Редкие","Недавние"].map(f=><button key={f} className={inventoryFilter===f?"active":""} onClick={()=>{feel();setInventoryFilter(f)}}>{f}</button>)}</div><div className="inventory-list">{visibleInventory.map(item=>{const g=findGift(item.giftId);return <article className={`inventory-card rarity-${item.value>=15000?"legendary":item.value>=5000?"epic":item.value>=1500?"rare":"common"}`} key={item.id}><div className="inventory-art"><img src={g?.image||"/errordrop-avatar.png"} alt={g?.name||"Подарок"}/></div><div className="inventory-detail"><small>#{item.id} · {cases.find(c=>c.id===item.caseId)?.name||item.caseId}</small><h3>{g?.name||item.giftId}</h3><p>Оценка: ≈ {item.value.toLocaleString("ru-RU")} игровых ⭐</p><span className={`inventory-status ${item.status}`}>{item.status==="owned"?"В инвентаре":item.status==="pending"?"Заявка на вывод":item.status==="sold"?"Продано":"Передано вручную"}</span>{item.status==="owned"&&<div className="inventory-actions"><button onClick={()=>void sell(item)}>ПРОДАТЬ · +{item.sellValue} ⭐</button><button onClick={()=>void withdraw(item)}>ЗАЯВКА НА ВЫВОД ↗</button></div>}</div></article>})}</div></>}
         <p className="source-note">Продажа обменивает игровую запись на внутренние ⭐. Вывод — только заявка администратору; передача настоящего Telegram-подарка не происходит автоматически и зависит от наличия подарка.</p>
       </>}

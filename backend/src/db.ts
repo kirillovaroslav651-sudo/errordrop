@@ -192,6 +192,18 @@ export async function getUser(telegramId: number): Promise<any> {
   return getRawUser(telegramId);
 }
 
+/** Withdrawal access is based only on confirmed XTR payments, not admin/game credits. */
+export async function getWithdrawalAccess(userId: number, client: { query: (sql: string, params?: any[]) => Promise<any> } = pool) {
+  const result = await client.query(`SELECT
+    COALESCE((SELECT SUM(amount) FROM transactions WHERE user_id=$1 AND type='purchase'),0)::int AS paid,
+    COALESCE((SELECT -SUM(amount) FROM transactions WHERE user_id=$1 AND type='case_open'
+      AND created_at >= COALESCE((SELECT MIN(created_at) FROM transactions WHERE user_id=$1 AND type='purchase'), now())),0)::int AS wagered,
+    (SELECT COUNT(*)::int FROM users f WHERE f.referred_by=$1 AND
+      (SELECT COALESCE(SUM(amount),0) FROM transactions WHERE user_id=f.telegram_id AND type='purchase') >= 50) AS qualified_friends`, [userId]);
+  const { paid, wagered, qualified_friends: qualifiedFriends } = result.rows[0];
+  return { paid, wagered, qualifiedFriends, unlocked: (paid >= 500 && wagered >= 500) || qualifiedFriends >= 5 };
+}
+
 /** Создать юзера при первом входе (upsert по telegram_id). */
 export async function ensureUser(
   telegramId: number,
@@ -392,6 +404,8 @@ export async function requestGiftWithdrawal(userId: number, inventoryId: number)
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+    await client.query(`SELECT telegram_id FROM users WHERE telegram_id=$1 FOR UPDATE`, [userId]);
+    if (!(await getWithdrawalAccess(userId, client)).unlocked) throw new Error("withdrawal_locked");
     const item = await client.query(`SELECT * FROM gift_inventory WHERE id=$1 AND user_id=$2 FOR UPDATE`,[inventoryId,userId]);
     if (!item.rows[0] || item.rows[0].status !== "owned") throw new Error("gift_not_available");
     const result = await client.query(`INSERT INTO gift_withdrawals(inventory_id,user_id) VALUES($1,$2) RETURNING id`,[inventoryId,userId]);

@@ -18,6 +18,7 @@ import {
   openPaidCase,
   sellInventoryGift,
   requestGiftWithdrawal,
+  getWithdrawalAccess,
   PACKAGES,
 } from "./db";
 import giftCatalog from "./giftCatalog.json";
@@ -43,7 +44,7 @@ router.get("/me", requireAuth, async (req: any, res: Response) => {
 
   const user = await ensureUser(u.id, u.username, refId && refId !== u.id ? refId : null);
   const tx = await getTransactions(u.id, 25);
-  const [rc, drb, gallery, inventory] = await Promise.all([countReferrals(u.id), dailyBonusReady(u.id), getGiftGallery(u.id), getInventory(u.id)]);
+  const [rc, drb, gallery, inventory, withdrawalAccess] = await Promise.all([countReferrals(u.id), dailyBonusReady(u.id), getGiftGallery(u.id), getInventory(u.id), getWithdrawalAccess(u.id)]);
 
   res.json({
     ok: true,
@@ -60,6 +61,7 @@ router.get("/me", requireAuth, async (req: any, res: Response) => {
       transactions: tx,
       gallery,
       inventory,
+      withdrawalAccess,
     },
   });
 });
@@ -136,7 +138,7 @@ router.post("/inventory/:id/withdraw", requireAuth, async (req: any, res: Respon
   if (!id) return res.status(400).json({ok:false,error:"invalid_item"});
   try { const requestId = await requestGiftWithdrawal(req.auth.user.id,id);
     return res.json({ok:true,data:{requestId,inventory:await getInventory(req.auth.user.id)}});
-  } catch(e:any) { return res.status(e?.message === "gift_not_available" ? 409 : 500).json({ok:false,error:e?.message === "gift_not_available" ? e.message : "withdraw_failed"}); }
+  } catch(e:any) { const known = ["gift_not_available", "withdrawal_locked"].includes(e?.message); return res.status(known ? 409 : 500).json({ok:false,error:known ? e.message : "withdraw_failed"}); }
 });
 
 router.get("/admin/player", requireAuth, async (req: any, res: Response) => {

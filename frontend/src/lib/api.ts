@@ -34,6 +34,7 @@ export type MeData = {
   transactions: Tx[];
   gallery: string[];
   inventory: InventoryItem[];
+  withdrawalAccess: { paid: number; wagered: number; qualifiedFriends: number; unlocked: boolean };
 };
 
 export type InventoryItem = { id: number; giftId: string; caseId: string; value: number; sellValue: number; status: "owned" | "sold" | "pending" | "withdrawn"; createdAt: number };
