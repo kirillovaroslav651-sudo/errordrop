@@ -311,13 +311,23 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     let cursor = 0;
     const outcome = outcomes.find(item => (cursor += item.chance) > pick) ?? outcomes[0];
     let reward: CaseReward;
-    // All paid outcomes resolve to catalog gifts; only the daily case awards stars.
+    // Early cases preserve their configured star outcomes. Only the bonus
+    // branch grants a gift; high-tier cases continue to grant catalog gifts.
+    const earlyCase = c.id === "spark" || c.id === "redline";
+    if (earlyCase && !giftRoll) {
+      reward = { type: "stars", stars: outcome?.stars ?? c.price };
+    } else {
     const target = giftRoll
       ? c.price + crypto.randomInt(Math.max(1, (c.bonusMax ?? c.price) - c.price + 1))
       : (outcome?.stars ?? c.price);
     const minValue = Math.max(1, Math.floor(target * 0.8));
     const maxValue = Math.max(minValue, Math.ceil(target * 1.2));
     const candidates = playableGifts.filter(g => g.value >= minValue && g.value <= maxValue);
+    // Never grant an out-of-range 'profitable' gift by falling back to the
+    // cheapest catalog item when the intended early-case bonus is unavailable.
+    if (earlyCase && giftRoll && candidates.length === 0) {
+      reward = { type: "stars", stars: target };
+    } else {
     const poolForCase = candidates.length
       ? candidates
       : [...playableGifts].sort((a, b) => Math.abs(a.value - target) - Math.abs(b.value - target)).slice(0, 12);
@@ -327,6 +337,8 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     const inv = await client.query(`INSERT INTO gift_inventory(user_id,gift_id,case_id,display_value,sell_value)
       VALUES($1,$2,$3,$4,$5) RETURNING id`, [userId,g.id,caseId,g.value,sellValue]);
     reward = { type: "gift", stars: 0, giftId: g.id, inventoryId: Number(inv.rows[0].id), value: g.value };
+    }
+    }
     const balance = Number(user.rows[0].balance) - c.price + reward.stars;
     await client.query(`UPDATE users SET balance=$1 WHERE telegram_id=$2`, [balance,userId]);
     await client.query(`INSERT INTO transactions(user_id,type,amount,bet_id,game,choice)
