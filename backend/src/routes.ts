@@ -111,8 +111,21 @@ router.delete("/gallery/:giftId", requireAuth, async (req: any, res: Response) =
   res.json({ ok: true, data: { gallery: await getGiftGallery(req.auth.user.id) } });
 });
 
+async function channelSubscription(userId:number):Promise<boolean> {
+  const response=await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=@ErrorDropNews&user_id=${userId}`);
+  const result=await response.json() as any;
+  if (!result.ok) {
+    console.error("channel membership check failed",result.error_code,result.description);
+    throw new Error("subscription_check_unavailable");
+  }
+  const member=result.result;
+  return ["member","administrator","creator"].includes(member?.status) ||
+    (member?.status==="restricted" && member?.is_member===true);
+}
+
 router.get("/subscription-status", requireAuth, async (req:any,res:Response)=>{
-  try { const tg=await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=@ErrorDropNews&user_id=${req.auth.user.id}`).then(r=>r.json() as Promise<any>); const status=tg?.result?.status; res.json({ok:true,data:{subscribed:['member','administrator','creator'].includes(status)}}); } catch { res.json({ok:true,data:{subscribed:false}}); }
+  try { res.json({ok:true,data:{subscribed:await channelSubscription(req.auth.user.id)}}); }
+  catch { res.status(503).json({ok:false,error:"subscription_check_unavailable"}); }
 });
 
 router.post("/cases/:caseId/open", requireAuth, async (req: any, res: Response) => {
@@ -123,13 +136,12 @@ router.post("/cases/:caseId/open", requireAuth, async (req: any, res: Response) 
     return res.status(400).json({ ok: false, error: "invalid_bet_id" });
   if (caseId === "daily") {
     try {
-      const tg=await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=@ErrorDropNews&user_id=${userId}`).then(r=>r.json() as Promise<any>);
-      if (!['member','administrator','creator'].includes(tg?.result?.status)) return res.status(403).json({ok:false,error:"channel_required"});
+      if (!await channelSubscription(userId)) return res.status(403).json({ok:false,error:"channel_required"});
       const result = await claimDailyBonus(userId, 5);
       if (!result.granted) return res.status(409).json({ ok: false, error: "daily_already_claimed" });
       const user = await getUser(userId);
       return res.json({ ok: true, data: { caseId, price: 0, reward: { type: "stars", stars: 5 }, balance: Number(user.balance) } });
-    } catch (e) { console.error("daily case failed",e); return res.status(500).json({ ok:false,error:"case_failed" }); }
+    } catch (e:any) { console.error("daily case failed",e); return res.status(e?.message==="subscription_check_unavailable"?503:500).json({ ok:false,error:e?.message==="subscription_check_unavailable"?e.message:"case_failed" }); }
   }
   try {
     const result = await openPaidCase(userId, caseId, betId);

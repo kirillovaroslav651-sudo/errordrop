@@ -133,7 +133,7 @@ export default function App() {
     if(!me||opening)return;
     if(selected.price===0){
       if(!me.user.dailyBonusReady){notify("Бесплатный кейс уже открыт сегодня");return}
-      if(!demo){try{const status=await api.subscriptionStatus();if(!status.subscribed){setSubscribePrompt(true);return}}catch{/* server will enforce */}}
+      if(!demo){try{const status=await api.subscriptionStatus();if(!status.subscribed){setSubscribePrompt(true);return}}catch{setSubscribePrompt(true);notify("Проверка подписки временно недоступна. Убедись, что бот добавлен администратором канала.");return}}
     }
     if(me.user.balance<selected.price){setBuyOpen(true);return}
     const current=selected;
@@ -199,7 +199,7 @@ export default function App() {
       setWheel(w=>w?{...w,done:true}:w);
       if(!demo)await reload();
       try{if(haptics)WebApp.HapticFeedback.notificationOccurred("success")}catch{/* browser preview */}
-    }catch(e:any){setWheel(null);setError(e.message||"Не удалось открыть кейс")}
+    }catch(e:any){setWheel(null);if(e.message==="channel_required"){setSubscribePrompt(true);setError("Подписка на @ErrorDropNews не подтверждена")}else setError(e.message||"Не удалось открыть кейс")}
     finally{setOpening(false)}
   }
   async function claimDaily(){
@@ -338,10 +338,11 @@ export default function App() {
     {error&&<div className="toast error-toast" role="alert" onClick={()=>setError("")}>{error} <span>×</span></div>}{toast&&<div className="toast" role="status" onClick={()=>setToast("")}>{toast} <span>×</span></div>}
     {settingsOpen&&<div className="modal-scrim" onClick={()=>setSettingsOpen(false)}><section className="modal-sheet" role="dialog" aria-modal="true" aria-label="Настройки" onClick={e=>e.stopPropagation()}><div className="modal-top"><small>ERRORDROP / SETTINGS</small><button onClick={()=>setSettingsOpen(false)}>×</button></div><h2>НАСТРОЙКИ</h2><label className="toggle-row">Тактильный отклик<input type="checkbox" checked={haptics} onChange={e=>{setHaptics(e.target.checked);localStorage.setItem("ed-haptics",e.target.checked?"on":"off")}}/></label><label className="toggle-row">Меньше анимаций<input type="checkbox" checked={lessMotion} onChange={e=>{setLessMotion(e.target.checked);localStorage.setItem("ed-motion",e.target.checked?"less":"full")}}/></label></section></div>}
     {wheel&&<div className="wheel-overlay" role="dialog" aria-modal="true" aria-label="Рулетка кейса"><div className="wheel-header"><span>ERRORDROP / РУЛЕТКА</span><button disabled={!wheel.done} onClick={()=>setWheel(null)} aria-label="Закрыть">×</button></div><h2>{wheel.done?"ТВОЙ ДРОП!":"КРУТИМ КЕЙС…"}</h2><p>{cases.find(c=>c.id===wheel.result.caseId)?.name}</p>{!wheel.done&&<div className="decrypt-status"><span>РАСШИФРОВКА ПРИЗА</span><i/></div>}<div className={`wheel-window ${wheel.done?"wheel-finished":""}`} ref={wheelWindow}><div className="wheel-marker"/><div className="wheel-track" ref={wheelTrack}>{wheel.items.map((item,i)=>{const g=findGift(item.giftId);return <div className={`wheel-card ${item.giftId?"wheel-gift":"wheel-stars"}`} key={i}>{g?<img src={g.image} alt=""/>:<span>★</span>}<b>{g?.name||`${item.stars} ⭐`}</b></div>})}</div></div><p className="wheel-disclaimer">Лента — визуальная анимация, а не отображение шансов. Результат определяет сервер; лента не показывает шансы.</p>{wheel.done&&<div className="wheel-result"><div className="result-symbol">✺</div>{wheel.result.reward.type==="gift"?<><h3>{findGift(wheel.result.reward.giftId)?.name}</h3><p>Подарок сохранён в игровом инвентаре.</p><button className="spin-cta" onClick={()=>{setWheel(null);navigate("inventory")}}>В ИНВЕНТАРЬ →</button></>:<><h3>+{wheel.result.reward.stars} игровых ⭐</h3><p>{wheel.result.price?`Цена кейса ${wheel.result.price} ⭐ · приз ждёт в инвентаре`:"Звёздный приз ждёт в инвентаре"}</p><button className="spin-cta" onClick={()=>{setWheel(null);navigate("inventory")}}>В ИНВЕНТАРЬ →</button></>}</div>}</div>}
-    {subscribePrompt&&<div className="modal-scrim" onClick={()=>setSubscribePrompt(false)}><section className="modal-sheet subscribe-modal" onClick={e=>e.stopPropagation()}><div className="modal-top"><small>ERRORDROP / ACCESS</small><button onClick={()=>setSubscribePrompt(false)}>×</button></div><h2>ПОДПИШИСЬ НА КАНАЛ</h2><p>Чтобы открыть бесплатный кейс, подпишись на <b>@ErrorDropNews</b>.</p><button className="spin-cta" onClick={()=>{try{WebApp.openTelegramLink("https://t.me/ErrorDropNews")}catch{window.open("https://t.me/ErrorDropNews","_blank")}}}>ОТКРЫТЬ КАНАЛ ↗</button><button className="outline-btn" onClick={async()=>{try{const status=await api.subscriptionStatus();if(status.subscribed){setSubscribePrompt(false);notify("Подписка подтверждена")}else notify("Подписка ещё не найдена")}catch{notify("Не удалось проверить подписку")}}}>ПРОВЕРИТЬ ПОДПИСКУ</button></section></div>}
+    {subscribePrompt&&<div className="modal-scrim" onClick={()=>setSubscribePrompt(false)}><section className="modal-sheet subscribe-modal" onClick={e=>e.stopPropagation()}><div className="modal-top"><small>ERRORDROP / ACCESS</small><button onClick={()=>setSubscribePrompt(false)}>×</button></div><h2>ПОДПИШИСЬ НА КАНАЛ</h2><p>Чтобы открыть бесплатный кейс, подпишись на <b>@ErrorDropNews</b>.</p><button className="spin-cta" onClick={()=>{try{WebApp.openTelegramLink("https://t.me/ErrorDropNews")}catch{window.open("https://t.me/ErrorDropNews","_blank")}}}>ОТКРЫТЬ КАНАЛ ↗</button><button className="outline-btn" onClick={async()=>{try{const status=await api.subscriptionStatus();if(status.subscribed){setSubscribePrompt(false);notify("Подписка подтверждена")}else notify("Подписка ещё не найдена")}catch{notify("Не удалось проверить подписку: добавь @ErrorDrop_Bot администратором канала @ErrorDropNews") }}}>ПРОВЕРИТЬ ПОДПИСКУ</button></section></div>}
     {buyOpen&&<BuyModal onClose={()=>setBuyOpen(false)} onPurchased={async()=>{setBuyOpen(false);await reload()}}/>}
   </div>;
 }
+
 
 
 
