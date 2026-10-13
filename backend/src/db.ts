@@ -551,7 +551,14 @@ function resolveGame(
   choice?: string
 ): { won: boolean; multiplier: number; label: string } {
   switch (game) {
-    case "crash": {\n      const cashout = Number(choice);\n      if (!Number.isFinite(cashout) || cashout < 1.01 || cashout > 1000) return { won: false, multiplier: 1, label: "invalid_cashout" };\n      const r = crypto.randomInt(1, 1000000) / 1000000;\n      const crash = Math.max(1.01, Math.min(1000, Math.floor((0.95 / (1 - r)) * 100) / 100));\n      return { won: cashout <= crash, multiplier: cashout, label: `crash:${crash.toFixed(2)}` };\n    }\n    case "coin": {
+    case "crash": {
+      const cashout = Number(choice);
+      if (!Number.isFinite(cashout) || cashout < 1.01 || cashout > 1000) return { won: false, multiplier: 1, label: "invalid_cashout" };
+      const r = crypto.randomInt(1, 1000000) / 1000000;
+      const crash = Math.max(1.01, Math.min(1000, Math.floor((0.95 / (1 - r)) * 100) / 100));
+      return { won: cashout <= crash, multiplier: cashout, label: `crash:${crash.toFixed(2)}` };
+    }
+    case "coin": {
       const result = crypto.randomInt(2) === 0 ? "heads" : "tails";
       return { won: choice === result, multiplier: 2, label: result };
     }
@@ -746,5 +753,6 @@ export async function grantReferralBonus(referrerId: number, purchaseAmount: num
 export { db };
 
 const db = pool;
+
 
 
