@@ -111,6 +111,10 @@ router.delete("/gallery/:giftId", requireAuth, async (req: any, res: Response) =
   res.json({ ok: true, data: { gallery: await getGiftGallery(req.auth.user.id) } });
 });
 
+router.get("/subscription-status", requireAuth, async (req:any,res:Response)=>{
+  try { const tg=await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=@ErrorDropNews&user_id=${req.auth.user.id}`).then(r=>r.json() as Promise<any>); const status=tg?.result?.status; res.json({ok:true,data:{subscribed:['member','administrator','creator'].includes(status)}}); } catch { res.json({ok:true,data:{subscribed:false}}); }
+});
+
 router.post("/cases/:caseId/open", requireAuth, async (req: any, res: Response) => {
   const userId = req.auth.user.id;
   const caseId = req.params.caseId;
@@ -119,6 +123,8 @@ router.post("/cases/:caseId/open", requireAuth, async (req: any, res: Response) 
     return res.status(400).json({ ok: false, error: "invalid_bet_id" });
   if (caseId === "daily") {
     try {
+      const tg=await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=@ErrorDropNews&user_id=${userId}`).then(r=>r.json() as Promise<any>);
+      if (!['member','administrator','creator'].includes(tg?.result?.status)) return res.status(403).json({ok:false,error:"channel_required"});
       const result = await claimDailyBonus(userId, 5);
       if (!result.granted) return res.status(409).json({ ok: false, error: "daily_already_claimed" });
       const user = await getUser(userId);
