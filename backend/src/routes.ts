@@ -21,6 +21,7 @@ import {
   getWithdrawalAccess,
   adminRemoveStars,
   adminRemoveGift,
+  upgradeGift,
 } from "./db";
 import giftCatalog from "./giftCatalog.json";
 import { authGuard, requireAuth, TgUser } from "./auth";
@@ -134,6 +135,15 @@ router.post("/cases/:caseId/open", requireAuth, async (req: any, res: Response) 
     console.error("case opening failed",e);
     return res.status(500).json({ ok:false,error:"case_failed" });
   }
+});
+
+router.post("/inventory/:id/upgrade", requireAuth, async (req: any, res: Response) => {
+  const id=toInt(req.params.id), targetGiftId=req.body.targetGiftId;
+  if (!id || typeof targetGiftId!=="string" || !giftIds.has(targetGiftId))
+    return res.status(400).json({ok:false,error:"invalid_upgrade_target"});
+  try { return res.json({ok:true,data:await upgradeGift(req.auth.user.id,id,targetGiftId)}); }
+  catch(e:any) { const known=["gift_not_available","invalid_upgrade_target"].includes(e?.message);
+    return res.status(known?409:500).json({ok:false,error:known?e.message:"upgrade_failed"}); }
 });
 
 router.post("/inventory/:id/sell", requireAuth, async (req: any, res: Response) => {

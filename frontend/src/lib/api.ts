@@ -37,7 +37,8 @@ export type MeData = {
   withdrawalAccess: { paid: number; committed: number; availableXtr: number; referralCount: number; friendPayments: number[]; openedCases:number; level:number; requiredLevel:number };
 };
 
-export type InventoryItem = { id: number; giftId: string; caseId: string; value: number; sellValue: number; status: "owned" | "sold" | "pending" | "withdrawn" | "removed"; createdAt: number };
+export type InventoryItem = { id: number; giftId: string; caseId: string; value: number; sellValue: number; status: "owned" | "sold" | "pending" | "withdrawn" | "removed" | "upgraded" | "burned"; createdAt: number };
+export type UpgradeResult = {success:boolean;chance:number;targetGiftId:string;targetValue:number;inventoryId:number|null;roll:number};
 export type CaseResult = { caseId: string; price: number; reward: { type: "stars" | "gift"; stars: number; giftId?: string; inventoryId?: number; value?: number }; balance: number };
 export type AdminPlayer = { telegramId: number; username: string | null; balance: number; inventory: InventoryItem[] };
 export type Withdrawal = { id: number; inventoryId: number; userId: number; status: string; giftId: string; username: string | null; createdAt: number };
@@ -65,6 +66,7 @@ export const api = {
   giftPrices: () => request<{prices:{id:string;stars:number;updatedAt:string}[]}>("/api/gift-prices"),
   openCase: (caseId: string, betId: string) => request<CaseResult>(`/api/cases/${encodeURIComponent(caseId)}/open`, { method: "POST", body: JSON.stringify({betId}) }),
   sellGift: (id: number) => request<{credited:number; inventory:InventoryItem[]}>(`/api/inventory/${id}/sell`, {method:"POST"}),
+  upgradeGift: (id:number,targetGiftId:string) => request<UpgradeResult>(`/api/inventory/${id}/upgrade`, {method:"POST",body:JSON.stringify({targetGiftId})}),
   withdrawGift: (id: number) => request<{requestId:number; inventory:InventoryItem[]}>(`/api/inventory/${id}/withdraw`, {method:"POST"}),
   adminPlayer: (q: string) => request<{players:AdminPlayer[]}>(`/api/admin/player?q=${encodeURIComponent(q)}`),
   adminRemoveStars: (id:number,amount:number,reason:string) => request<{balance:number}>(`/api/admin/player/${id}/remove-stars`,{method:"POST",body:JSON.stringify({amount,reason})}),

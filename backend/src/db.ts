@@ -151,6 +151,11 @@ export async function initDb() {
         inventory_id BIGINT,
         created_at TIMESTAMPTZ NOT NULL DEFAULT now()
       );
+      CREATE TABLE IF NOT EXISTS upgrades (
+        id BIGSERIAL PRIMARY KEY, user_id BIGINT NOT NULL REFERENCES users(telegram_id),
+        source_inventory_id BIGINT NOT NULL, target_gift_id TEXT NOT NULL, target_value INTEGER NOT NULL,
+        chance NUMERIC NOT NULL, success BOOLEAN NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
       CREATE TABLE IF NOT EXISTS gift_withdrawals (
         id BIGSERIAL PRIMARY KEY,
         inventory_id BIGINT NOT NULL UNIQUE REFERENCES gift_inventory(id),
@@ -420,6 +425,34 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
       VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, [betId,userId,caseId,c.price,reward.type,reward.stars,reward.giftId??null,reward.inventoryId??null]);
     await client.query("COMMIT");
     return { caseId, price: c.price, reward, balance };
+  } catch(e) { await client.query("ROLLBACK"); throw e; }
+  finally { client.release(); }
+}
+
+export async function upgradeGift(userId: number, sourceId: number, targetGiftId: string) {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const item = await client.query(`SELECT * FROM gift_inventory WHERE id=$1 AND user_id=$2 FOR UPDATE`,[sourceId,userId]);
+    if (!item.rows[0] || item.rows[0].status !== "owned") throw new Error("gift_not_available");
+    const target = playableGifts().find(g => g.id === targetGiftId);
+    const sourceValue = Number(item.rows[0].display_value);
+    if (!target || target.value <= sourceValue) throw new Error("invalid_upgrade_target");
+    const chanceBps = Math.floor(sourceValue / target.value * 9000);
+    if (chanceBps <= 0) throw new Error("invalid_upgrade_target");
+    const roll = crypto.randomInt(10000);
+    const success = roll < chanceBps;
+    await client.query(`UPDATE gift_inventory SET status=$1,updated_at=now() WHERE id=$2`,[success?"upgraded":"burned",sourceId]);
+    let inventoryId: number | null = null;
+    if (success) {
+      const created = await client.query(`INSERT INTO gift_inventory(user_id,gift_id,case_id,display_value,sell_value)
+        VALUES($1,$2,'upgrade',$3,$3) RETURNING id`,[userId,target.id,target.value]);
+      inventoryId = Number(created.rows[0].id);
+    }
+    await client.query(`INSERT INTO upgrades(user_id,source_inventory_id,target_gift_id,target_value,chance,success)
+      VALUES($1,$2,$3,$4,$5,$6)`,[userId,sourceId,target.id,target.value,chanceBps/100,success]);
+    await client.query("COMMIT");
+    return { success, chance:chanceBps/100, targetGiftId:target.id, targetValue:target.value, inventoryId, roll:roll/100 };
   } catch(e) { await client.query("ROLLBACK"); throw e; }
   finally { client.release(); }
 }
