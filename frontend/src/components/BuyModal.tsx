@@ -59,7 +59,7 @@ export default function BuyModal({ onClose, onPurchased }: Props) {
         <button className="btn topup-submit" disabled={busy} onClick={() => void buy()}>{busy ? "ОТКРЫВАЕМ ОПЛАТУ…" : "ПОПОЛНИТЬ →"}</button>
 
         <div className="external-stars">
-          <span>Купить звёзды Telegram на внешнем сервисе?</span>
+          <span>КУПИТЬ ЗВЁЗДЫ TELEGRAM ДЁШЕВО</span>
           <button type="button" onClick={() => { try { WebApp.openLink(STARS_LINK); } catch { window.open(STARS_LINK, "_blank", "noopener,noreferrer"); } }}>ТУТ ↗</button>
           <small>Покупка по этой ссылке не пополняет игровой баланс ErrorDrop. Для пополнения игры используй кнопку выше.</small>
         </div>
@@ -73,3 +73,4 @@ export default function BuyModal({ onClose, onPurchased }: Props) {
     </div>
   );
 }
+
