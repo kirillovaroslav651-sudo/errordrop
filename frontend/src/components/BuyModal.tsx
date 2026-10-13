@@ -7,6 +7,8 @@ type Props = {
   onPurchased: () => void;
 };
 
+const STARS_LINK = "https://split.tg/?ref=UQClU3l3SZfzm9htQyg7CqiIjhG2hpXJ7aT4EpY2Sxoq-EJ-";
+
 export default function BuyModal({ onClose, onPurchased }: Props) {
   const [busy, setBusy] = useState(false);
   const [amount, setAmount] = useState("300");
@@ -55,6 +57,12 @@ export default function BuyModal({ onClose, onPurchased }: Props) {
         <label className="custom-topup">СКОЛЬКО ЗВЁЗД ПОПОЛНИТЬ?<input type="number" inputMode="numeric" min="50" max="100000" step="1" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="От 50" aria-label="Количество Telegram Stars для оплаты" /></label>
         <p className="topup-summary">При первом пополнении начисляется <b>+50% игровых ⭐</b>.</p>
         <button className="btn topup-submit" disabled={busy} onClick={() => void buy()}>{busy ? "ОТКРЫВАЕМ ОПЛАТУ…" : "ПОПОЛНИТЬ →"}</button>
+
+        <div className="external-stars">
+          <span>Купить звёзды Telegram на внешнем сервисе?</span>
+          <button type="button" onClick={() => { try { WebApp.openLink(STARS_LINK); } catch { window.open(STARS_LINK, "_blank", "noopener,noreferrer"); } }}>ТУТ ↗</button>
+          <small>Покупка по этой ссылке не пополняет игровой баланс ErrorDrop. Для пополнения игры используй кнопку выше.</small>
+        </div>
 
         {error && <div className="error-banner">{error}</div>}
 
