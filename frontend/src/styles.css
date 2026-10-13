@@ -68,3 +68,4 @@
 
 /* Performance: keep ambient effects on compositor without blocking taps */
 .ambient,.app:before{will-change:transform}.live-strip{contain:content;overscroll-behavior-x:contain}.carousel-card,.panel{will-change:transform}
+.topup-bonus{text-align:center;color:#ff776b;font:800 18px Unbounded,Manrope,sans-serif;letter-spacing:.02em;margin:12px 0 26px}.topup-bonus b{color:#fff;text-shadow:0 0 14px #e53935}.topup-summary{font-size:12px!important;text-align:center;color:#aaa!important;margin:12px 0 18px!important}.topup-summary b{color:#ff776b}
