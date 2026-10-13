@@ -483,7 +483,7 @@ export async function upgradeGift(userId: number, sourceId: number, targetGiftId
     const sourceValue = Number(item.rows[0].display_value);
     if (!target || target.value <= sourceValue) throw new Error("invalid_upgrade_target");
     const chanceBps = Math.floor(sourceValue / target.value * 9000);
-    if (chanceBps <= 0) throw new Error("invalid_upgrade_target");
+    if (chanceBps <= 0 || chanceBps > 7000) throw new Error("invalid_upgrade_target");
     const roll = crypto.randomInt(10000);
     const success = roll < chanceBps;
     await client.query(`UPDATE gift_inventory SET status=$1,updated_at=now() WHERE id=$2`,[success?"upgraded":"burned",sourceId]);
@@ -797,6 +797,7 @@ export async function grantReferralBonus(referrerId: number, purchaseAmount: num
 export { db };
 
 const db = pool;
+
 
 
 
