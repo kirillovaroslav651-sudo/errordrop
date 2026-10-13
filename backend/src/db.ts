@@ -364,12 +364,12 @@ export async function getInventory(userId: number) {
   const r = await pool.query(`SELECT i.id, i.gift_id AS "giftId", i.case_id AS "caseId",
     i.display_value AS "value", i.sell_value AS "sellValue", i.status,
     extract(epoch from i.created_at)::int AS "createdAt"
-    FROM gift_inventory i WHERE i.user_id=$1 ORDER BY i.id DESC LIMIT 200`, [userId]);
+    FROM gift_inventory i WHERE i.user_id=$1 AND i.status <> 'archived' ORDER BY i.id DESC LIMIT 200`, [userId]);
   return r.rows;
 }
 
 export async function getStarInventory(userId:number) {
-  const r=await pool.query(`SELECT id,case_id AS "caseId",amount,status,extract(epoch from created_at)::int AS "createdAt" FROM star_inventory WHERE user_id=$1 ORDER BY id DESC LIMIT 200`,[userId]);
+  const r=await pool.query(`SELECT id,case_id AS "caseId",amount,status,extract(epoch from created_at)::int AS "createdAt" FROM star_inventory WHERE user_id=$1 AND status <> 'archived' ORDER BY id DESC LIMIT 200`,[userId]);
   return r.rows;
 }
 export async function getLiveGifts() {
@@ -390,8 +390,8 @@ export async function settleInventory(userId:number, action:'sell'|'clear') {
         await client.query(`INSERT INTO transactions(user_id,type,amount,game) VALUES($1,'gift_sale',$2,'inventory')`,[userId,credited]); }
       await client.query('COMMIT'); return {credited,count:gifts.rowCount!+stars.rowCount!};
     }
-    const gifts=await client.query(`DELETE FROM gift_inventory WHERE user_id=$1 AND status IN ('sold','removed','burned','upgraded') AND NOT EXISTS(SELECT 1 FROM gift_withdrawals w WHERE w.inventory_id=gift_inventory.id)`,[userId]);
-    const stars=await client.query(`DELETE FROM star_inventory WHERE user_id=$1 AND status='sold'`,[userId]);
+    const gifts=await client.query(`UPDATE gift_inventory SET status='archived',updated_at=now() WHERE user_id=$1 AND status IN ('sold','removed','burned','upgraded')`,[userId]);
+    const stars=await client.query(`UPDATE star_inventory SET status='archived' WHERE user_id=$1 AND status='sold'`,[userId]);
     await client.query('COMMIT'); return {credited:0,count:gifts.rowCount!+stars.rowCount!};
   } catch(e) {await client.query('ROLLBACK');throw e} finally {client.release()}
 }
@@ -770,10 +770,10 @@ export async function claimDailyBonus(telegramId: number, amount: number): Promi
        ON CONFLICT (user_id) DO UPDATE SET last_day = EXCLUDED.last_day`,
       [telegramId, day]
     );
-    await client.query(`UPDATE users SET balance = balance + $1 WHERE telegram_id = $2`, [amount, telegramId]);
+    await client.query(`INSERT INTO star_inventory(user_id,case_id,amount) VALUES($1,'daily',$2)`,[telegramId,amount]);
     await client.query(
-      `INSERT INTO transactions (user_id, type, amount, ref) VALUES ($1, 'daily_bonus', $2, $3)`,
-      [telegramId, amount, `daily:${telegramId}:${day}`]
+      `INSERT INTO transactions (user_id, type, amount, ref) VALUES ($1, 'daily_bonus', 0, $2)`,
+      [telegramId, `daily:${telegramId}:${day}`]
     );
     await client.query("COMMIT");
   } catch (e) {

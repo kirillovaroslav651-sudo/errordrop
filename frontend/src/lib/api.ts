@@ -34,10 +34,13 @@ export type MeData = {
   transactions: Tx[];
   gallery: string[];
   inventory: InventoryItem[];
+  starInventory: StarItem[];
   withdrawalAccess: { paid: number; committed: number; availableXtr: number; referralCount: number; friendPayments: number[]; openedCases:number; level:number; requiredLevel:number };
 };
 
 export type InventoryItem = { id: number; giftId: string; caseId: string; value: number; sellValue: number; status: "owned" | "sold" | "pending" | "withdrawn" | "removed" | "upgraded" | "burned"; createdAt: number };
+export type StarItem = {id:number;caseId:string;amount:number;status:string;createdAt:number};
+export type LiveGift = {id:number;giftId:string;value:number;caseId:string;username:string|null;createdAt:number};
 export type UpgradeResult = {success:boolean;chance:number;targetGiftId:string;targetValue:number;inventoryId:number|null;roll:number};
 export type CaseResult = { caseId: string; price: number; reward: { type: "stars" | "gift"; stars: number; giftId?: string; inventoryId?: number; value?: number }; balance: number };
 export type AdminPlayer = { telegramId: number; username: string | null; balance: number; inventory: InventoryItem[] };
@@ -65,6 +68,10 @@ export const api = {
   presence: () => request<{online:number}>("/api/presence",{method:"POST"}),
   giftPrices: () => request<{prices:{id:string;stars:number;updatedAt:string}[]}>("/api/gift-prices"),
   openCase: (caseId: string, betId: string) => request<CaseResult>(`/api/cases/${encodeURIComponent(caseId)}/open`, { method: "POST", body: JSON.stringify({betId}) }),
+  liveGifts: () => request<{items:LiveGift[]}>('/api/live-gifts'),
+  sellStars: (id:number) => request<{credited:number}>(`/api/inventory/stars/${id}/sell`,{method:'POST'}),
+  sellAll: () => request<{credited:number;count:number}>('/api/inventory/sell-all',{method:'POST'}),
+  clearInventoryHistory: () => request<{count:number}>('/api/inventory/clear-history',{method:'POST'}),
   sellGift: (id: number) => request<{credited:number; inventory:InventoryItem[]}>(`/api/inventory/${id}/sell`, {method:"POST"}),
   upgradeGift: (id:number,targetGiftId:string) => request<UpgradeResult>(`/api/inventory/${id}/upgrade`, {method:"POST",body:JSON.stringify({targetGiftId})}),
   withdrawGift: (id: number) => request<{requestId:number; inventory:InventoryItem[]}>(`/api/inventory/${id}/withdraw`, {method:"POST"}),
