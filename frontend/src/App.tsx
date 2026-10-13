@@ -47,6 +47,7 @@ export default function App() {
   const [upgradeTarget,setUpgradeTarget] = useState("");
   const [upgradeBusy,setUpgradeBusy] = useState(false);
   const [upgradeResult,setUpgradeResult] = useState<UpgradeResult|null>(null);
+  const [upgradeStop,setUpgradeStop] = useState(0);
   const [hackStep,setHackStep] = useState(0);
   const [dailyBusy,setDailyBusy] = useState(false);
   const [target,setTarget] = useState("");
@@ -60,9 +61,9 @@ export default function App() {
   const user = getTgUser();
   const selected = cases[caseIndex];
   const inventory = me?.inventory || [];
-  const sourceItem=inventory.find(i=>i.id===upgradeSource&&i.status==="owned");
+  const sourceItem=inventory.find(i=>i.id===upgradeSource);
   const upgradeTargets=sourceItem?gifts.filter(g=>{const value=starValue(g);return value!==null&&value>sourceItem.value}).sort((a,b)=>(starValue(a)??0)-(starValue(b)??0)):[];
-  const targetGift=upgradeTargets.find(g=>g.id===upgradeTarget);
+  const targetGift=gifts.find(g=>g.id===upgradeTarget);
   const targetValue=targetGift?starValue(targetGift)??0:0;
   const upgradeChance=sourceItem&&targetValue?Math.floor(sourceItem.value/targetValue*9000)/100:0;
   const visibleInventory = useMemo(()=>{
@@ -216,11 +217,11 @@ export default function App() {
     if(!window.confirm(`Рискнуть подарком ${findGift(sourceItem.giftId)?.name||sourceItem.giftId}? Шанс ${upgradeChance}% с комиссией 10%. При неудаче предмет сгорит. Дополнительные ⭐ не списываются.`))return;
     setUpgradeBusy(true);setUpgradeResult(null);feel("heavy");
     try{
-      const result=demo?{success:Math.random()*100<upgradeChance,chance:upgradeChance,targetGiftId:targetGift.id,targetValue,inventoryId:Date.now(),roll:Math.random()*100}:await api.upgradeGift(sourceItem.id,targetGift.id);
+      const result=demo?(()=>{const roll=Math.random()*100;return {success:roll<upgradeChance,chance:upgradeChance,targetGiftId:targetGift.id,targetValue,inventoryId:Date.now(),roll}})():await api.upgradeGift(sourceItem.id,targetGift.id);
+      setUpgradeStop(1440+result.roll*3.6);
       await delay(2700);setUpgradeResult(result);feel(result.success?"heavy":"medium");
       if(demo)setMe(m=>m?{...m,inventory:[...m.inventory.map(i=>i.id===sourceItem.id?{...i,status:result.success?"upgraded":"burned"} as InventoryItem:i),...(result.success?[{id:result.inventoryId!,giftId:targetGift.id,caseId:"upgrade",value:targetValue,sellValue:targetValue,status:"owned" as const,createdAt:Date.now()/1000}]:[])]}:m);
       else await reload();
-      setUpgradeSource(null);setUpgradeTarget("");
     }catch(e:any){setError(e.message||"Ошибка апгрейда")}
     finally{setUpgradeBusy(false)}
   }
@@ -300,16 +301,19 @@ export default function App() {
       </>}
       {tab==="upgrade"&&<><div className="screen-kicker"><span className="red-line"/> SYSTEM / OVERCLOCK</div><h1 className="main-title">АПГРЕЙД<br/><em>ПРЕДМЕТОВ.</em></h1><p className="catalog-intro">Выберите свой подарок и более дорогую цель. Рискуете только своим предметом: при неудаче он сгорает. Дополнительные ⭐ не списываются. Комиссия системы — 10% в формуле шанса.</p>
         <section className={`upgrade-machine panel ${upgradeBusy?"is-spinning":""} ${upgradeResult?upgradeResult.success?"upgrade-success":"upgrade-failure":""}`}>
-          <div className="upgrade-pointer" aria-hidden="true">▼</div>
-          <div className="upgrade-dial" style={{"--success-deg":`${upgradeChance*3.6}deg`} as React.CSSProperties}><div className="upgrade-rotor"><div className="upgrade-center">{sourceItem?<><img src={findGift(sourceItem.giftId)?.image} alt=""/><b>{findGift(sourceItem.giftId)?.name}</b><small>{sourceItem.value} ⭐</small></>:<span>SELECT<br/>ITEM_01</span>}</div></div></div>
-          <div className="upgrade-marks"><span>0%</span><span>50%</span><span>100%</span></div>
+          <div className="upgrade-dial" style={{"--success-deg":`${upgradeChance*3.6}deg`,"--stop-angle":`${upgradeStop}deg`} as React.CSSProperties}>
+            <div className="upgrade-ticks" aria-hidden="true"/><div className="upgrade-ring"/>
+            <div className="upgrade-needle-track" key={upgradeStop}><div className="upgrade-pointer" aria-hidden="true">◆<i/></div></div>
+            <span className="upgrade-zero">0%</span><span className="upgrade-fifty-left">50%</span><span className="upgrade-fifty-right">50%</span><span className="upgrade-hundred">100%</span>
+            <div className="upgrade-rotor"><div className="upgrade-center"><strong>{upgradeChance.toFixed(2)}%</strong><small>ШАНС УСПЕХА</small>{sourceItem&&<><img src={findGift(sourceItem.giftId)?.image} alt=""/><b>{findGift(sourceItem.giftId)?.name}</b><small>{sourceItem.value} ⭐</small></>}</div></div>
+          </div>
           {targetGift&&<div className="upgrade-target"><img src={targetGift.image} alt=""/><span><small>ЦЕЛЬ / {targetValue.toLocaleString("ru-RU")} ⭐ · КОМИССИЯ 10%</small><b>{targetGift.name}</b></span><strong>{upgradeChance.toFixed(2)}%</strong></div>}
           {upgradeResult&&<div className={`upgrade-outcome ${upgradeResult.success?"success":"failure"}`}>{upgradeResult.success?`УСПЕХ! ПОЛУЧЕН ${findGift(upgradeResult.targetGiftId)?.name||upgradeResult.targetGiftId}`:"КРИТИЧЕСКИЙ СБОЙ. ПРЕДМЕТ СГОРЕЛ"}</div>}
         </section>
         <h2 className="upgrade-list-heading">01 / ВЫБЕРИТЕ ПРЕДМЕТ</h2><div className="upgrade-picks">{inventory.filter(i=>i.status==="owned").map(i=><button key={i.id} className={upgradeSource===i.id?"selected":""} disabled={upgradeBusy} onClick={()=>{setUpgradeSource(i.id);setUpgradeTarget("");setUpgradeResult(null);feel()}}><img src={findGift(i.giftId)?.image} alt=""/><b>{findGift(i.giftId)?.name||i.giftId}</b><small>{i.value} ⭐</small></button>)}{!inventory.some(i=>i.status==="owned")&&<p>В инвентаре пока нет доступных подарков.</p>}</div>
         {sourceItem&&<><h2 className="upgrade-list-heading">02 / ВЫБЕРИТЕ ЦЕЛЬ</h2><div className="upgrade-picks upgrade-targets">{upgradeTargets.map(g=><button key={g.id} className={upgradeTarget===g.id?"selected":""} disabled={upgradeBusy} onClick={()=>{setUpgradeTarget(g.id);setUpgradeResult(null);feel()}}><img src={g.image} alt=""/><b>{g.name}</b><small>{starValue(g)?.toLocaleString("ru-RU")} ⭐</small></button>)}{!upgradeTargets.length&&<p>Нет более дорогих подарков в каталоге.</p>}</div></>}
         {targetGift&&<p className="upgrade-terms">Шанс = ({sourceItem?.value} / {targetValue}) × 90% = <b>{upgradeChance.toFixed(2)}%</b>. При проигрыше исходный предмет удаляется из инвентаря. Результат определяет сервер.</p>}
-        <button className="spin-cta upgrade-submit" disabled={!sourceItem||!targetGift||upgradeBusy} onClick={()=>void runUpgrade()}>{upgradeBusy?"СИСТЕМА ПЕРЕГРУЖАЕТСЯ…":"УЛУЧШИТЬ →"}</button>
+        <button className="spin-cta upgrade-submit" disabled={!sourceItem||sourceItem.status!=="owned"||!targetGift||upgradeBusy} onClick={()=>void runUpgrade()}>{upgradeBusy?"СИСТЕМА ПЕРЕГРУЖАЕТСЯ…":upgradeResult?"ВЫБЕРИТЕ НОВЫЙ ПРЕДМЕТ":"УЛУЧШИТЬ →"}</button>
       </>}
       {tab==="catalog"&&<><div className="screen-kicker"><span className="red-line"/> GIFT INDEX / {gifts.length}</div><h1 className="main-title">МИР ПОДАРКОВ.<br/><em>ОДИН КАТАЛОГ.</em></h1><p className="catalog-intro">Для сопоставленных коллекций показан минимум перепродажи из Telegram в Stars (обновление до 6 часов). Для остальных — старая внутренняя оценка по TON с надбавкой 20%, не рыночная цена в Stars.</p><div className="catalog-tools"><input type="search" placeholder="Поиск подарка..." aria-label="Поиск подарка" value={query} onChange={e=>{setQuery(e.target.value);setLimit(36)}}/><span>{currentGifts.length} шт.</span></div><div className="chips">{["Все","До 1 500 ⭐","Дорогие","Без цены"].map(f=><button key={f} className={filter===f?"active":""} onClick={()=>{feel();setFilter(f);setLimit(36)}}>{f}</button>)}</div><div className="gift-grid">{currentGifts.slice(0,limit).map(g=><article className="gift-tile" key={g.id}><div className="gift-art"><img src={g.image} loading="lazy" alt={g.name}/><span>GIFT / {g.id.slice(0,3).toUpperCase()}</span></div><div className="gift-details"><b>{g.name}</b><small>{priceText(g)}</small><div><span className="catalog-label">{starValue(g)===null?"Нет в кейсах":`Кейс ${cases[giftTier(starValue(g)!)].name}`}</span><a href={g.url} target="_blank" rel="noopener noreferrer" aria-label={`Источник ${g.name}`}>↗</a></div></div></article>)}</div>{currentGifts.length>limit&&<button className="load-more" onClick={()=>setLimit(n=>n+36)}>ПОКАЗАТЬ ЕЩЁ ↓</button>}<p className="source-note">Telegram: {liveCount} сопоставленных коллекций. Если синхронизация ещё не настроена или коллекция не найдена, показывается старая оценка по скриншотам MRKT/Telegifter с надбавкой 20%. Неиспользуемые цены не подменяются выдуманными данными.</p></>}
       {tab==="profile"&&<><div className="screen-kicker"><span className="red-line"/> МОЙ ПРОФИЛЬ / {me.user.telegramId}</div><h1 className="main-title">ТВОЯ ТЕРРИТОРИЯ<span className="red-dot">.</span></h1><section className="profile-banner panel"><div className="large-avatar">{(user?.first_name||user?.username||"E")[0].toUpperCase()}</div><div><small>ИГРОК ERRORDROP</small><h2>{user?.first_name||user?.username||"Игрок"}</h2><span>ID {me.user.telegramId}</span></div><div className="profile-balance profile-balance-hidden">★ {me.user.balance.toLocaleString("ru-RU")}</div></section><section className="player-stats panel"><h2>СТАТИСТИКА ИГРОКА</h2><div><span><b>{openedCases}</b>открыто кейсов</span><span><b>{inventoryValue.toLocaleString("ru-RU")} ⭐</b>инвентарь</span><span><b>LVL {level}</b>уровень</span></div><small>Уровень: +1 за каждые 10 открытых кейсов. История отображает последние операции.</small></section><section className="invite-panel panel"><span className="panel-label">01 / КОМАНДА</span><div className="invite-art">♧</div><h2>ПРИГЛАШАЙ <em>ДРУЗЕЙ.</em></h2><p>Делись ссылкой и получай 10% игровых ⭐ от пополнений друзей.</p><div className="profile-stats"><span><b>{me.user.referralCount}</b> друзей</span><span><b>10%</b> бонус</span></div><button className="invite-btn" onClick={invite}>＋ ПРИГЛАСИТЬ ДРУГА <span>↗</span></button></section><section className="owned-panel panel"><div className="panel-title"><div><small>02 / НАГРАДЫ</small><h2>ИНВЕНТАРЬ</h2></div><b>{inventory.filter(i=>i.status==="owned").length} подарков</b></div><p className="ownership-note">Выпавшие подарки и заявки хранятся на сервере, а не в витрине избранного.</p><button className="outline-btn" onClick={()=>navigate("inventory")}>ОТКРЫТЬ ИНВЕНТАРЬ →</button></section><section className="panel history-panel"><h2>ИСТОРИЯ ИГР</h2><History transactions={me.transactions}/></section></>}
