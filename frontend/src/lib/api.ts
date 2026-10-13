@@ -65,6 +65,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   me: () => request<MeData>("/api/me"),
+  subscriptionStatus: () => request<{subscribed:boolean}>("/api/subscription-status"),
   presence: () => request<{online:number}>("/api/presence",{method:"POST"}),
   giftPrices: () => request<{prices:{id:string;stars:number;updatedAt:string}[]}>("/api/gift-prices"),
   openCase: (caseId: string, betId: string) => request<CaseResult>(`/api/cases/${encodeURIComponent(caseId)}/open`, { method: "POST", body: JSON.stringify({betId}) }),
