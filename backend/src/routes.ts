@@ -14,7 +14,7 @@ import {
   claimDailyBonus,
   moscowDay,
   getGiftGallery,
-  getInventory,
+  getInventory, getStarInventory, getLiveGifts, settleInventory, sellStarInventory,
   openPaidCase,
   sellInventoryGift,
   requestGiftWithdrawal,
@@ -46,7 +46,7 @@ router.get("/me", requireAuth, async (req: any, res: Response) => {
 
   const user = await ensureUser(u.id, u.username, refId && refId !== u.id ? refId : null);
   const tx = await getTransactions(u.id, 25);
-  const [rc, drb, gallery, inventory, withdrawalAccess] = await Promise.all([countReferrals(u.id), dailyBonusReady(u.id), getGiftGallery(u.id), getInventory(u.id), getWithdrawalAccess(u.id)]);
+  const [rc, drb, gallery, inventory, starInventory, withdrawalAccess] = await Promise.all([countReferrals(u.id), dailyBonusReady(u.id), getGiftGallery(u.id), getInventory(u.id), getStarInventory(u.id), getWithdrawalAccess(u.id)]);
 
   res.json({
     ok: true,
@@ -62,7 +62,7 @@ router.get("/me", requireAuth, async (req: any, res: Response) => {
       },
       transactions: tx,
       gallery,
-      inventory,
+      inventory, starInventory,
       withdrawalAccess,
     },
   });
@@ -136,6 +136,11 @@ router.post("/cases/:caseId/open", requireAuth, async (req: any, res: Response) 
     return res.status(500).json({ ok:false,error:"case_failed" });
   }
 });
+
+router.get("/live-gifts", requireAuth, async (_req, res:Response) => { try {res.json({ok:true,data:{items:await getLiveGifts()}})}catch(e){res.status(500).json({ok:false,error:'live_failed'})} });
+router.post("/inventory/sell-all", requireAuth, async (req:any,res:Response)=>{try{res.json({ok:true,data:await settleInventory(req.auth.user.id,'sell')})}catch(e){res.status(500).json({ok:false,error:'sale_failed'})}});
+router.post("/inventory/clear-history", requireAuth, async (req:any,res:Response)=>{try{res.json({ok:true,data:await settleInventory(req.auth.user.id,'clear')})}catch(e){res.status(500).json({ok:false,error:'clear_failed'})}});
+router.post("/inventory/stars/:id/sell", requireAuth, async (req:any,res:Response)=>{const id=toInt(req.params.id);if(!id)return res.status(400).json({ok:false,error:'invalid_item'});try{res.json({ok:true,data:{credited:await sellStarInventory(req.auth.user.id,id)}})}catch(e:any){res.status(409).json({ok:false,error:e?.message||'sale_failed'})}});
 
 router.post("/inventory/:id/upgrade", requireAuth, async (req: any, res: Response) => {
   const id=toInt(req.params.id), targetGiftId=req.body.targetGiftId;

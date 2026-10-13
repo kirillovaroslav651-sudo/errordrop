@@ -130,6 +130,12 @@ export async function initDb() {
         created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
       );
+      CREATE TABLE IF NOT EXISTS star_inventory (
+        id BIGSERIAL PRIMARY KEY, user_id BIGINT NOT NULL REFERENCES users(telegram_id),
+        case_id TEXT NOT NULL, amount INTEGER NOT NULL CHECK(amount > 0),
+        status TEXT NOT NULL DEFAULT 'owned', created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_star_inventory_user ON star_inventory(user_id,id DESC);
       CREATE TABLE IF NOT EXISTS telegram_gift_prices (
         gift_id TEXT PRIMARY KEY,
         stars INTEGER NOT NULL CHECK (stars > 0),
@@ -362,6 +368,45 @@ export async function getInventory(userId: number) {
   return r.rows;
 }
 
+export async function getStarInventory(userId:number) {
+  const r=await pool.query(`SELECT id,case_id AS "caseId",amount,status,extract(epoch from created_at)::int AS "createdAt" FROM star_inventory WHERE user_id=$1 ORDER BY id DESC LIMIT 200`,[userId]);
+  return r.rows;
+}
+export async function getLiveGifts() {
+  const r=await pool.query(`SELECT i.id,i.gift_id AS "giftId",i.display_value AS value,i.case_id AS "caseId",u.username,
+    extract(epoch from i.created_at)::int AS "createdAt" FROM gift_inventory i JOIN users u ON u.telegram_id=i.user_id
+    WHERE i.case_id <> 'upgrade' ORDER BY i.id DESC LIMIT 20`);
+  return r.rows;
+}
+export async function settleInventory(userId:number, action:'sell'|'clear') {
+  const client=await pool.connect();
+  try { await client.query('BEGIN');
+    await client.query('SELECT telegram_id FROM users WHERE telegram_id=$1 FOR UPDATE',[userId]);
+    if(action==='sell') {
+      const gifts=await client.query(`UPDATE gift_inventory SET status='sold',updated_at=now() WHERE user_id=$1 AND status='owned' RETURNING id,sell_value`,[userId]);
+      const stars=await client.query(`UPDATE star_inventory SET status='sold' WHERE user_id=$1 AND status='owned' RETURNING id,amount`,[userId]);
+      const credited=gifts.rows.reduce((n,r)=>n+Number(r.sell_value),0)+stars.rows.reduce((n,r)=>n+Number(r.amount),0);
+      if(credited) { await client.query('UPDATE users SET balance=balance+$1 WHERE telegram_id=$2',[credited,userId]);
+        await client.query(`INSERT INTO transactions(user_id,type,amount,game) VALUES($1,'gift_sale',$2,'inventory')`,[userId,credited]); }
+      await client.query('COMMIT'); return {credited,count:gifts.rowCount!+stars.rowCount!};
+    }
+    const gifts=await client.query(`DELETE FROM gift_inventory WHERE user_id=$1 AND status IN ('sold','removed','burned','upgraded') AND NOT EXISTS(SELECT 1 FROM gift_withdrawals w WHERE w.inventory_id=gift_inventory.id)`,[userId]);
+    const stars=await client.query(`DELETE FROM star_inventory WHERE user_id=$1 AND status='sold'`,[userId]);
+    await client.query('COMMIT'); return {credited:0,count:gifts.rowCount!+stars.rowCount!};
+  } catch(e) {await client.query('ROLLBACK');throw e} finally {client.release()}
+}
+export async function sellStarInventory(userId:number,id:number) {
+  const client=await pool.connect();try {await client.query('BEGIN');
+    await client.query('SELECT telegram_id FROM users WHERE telegram_id=$1 FOR UPDATE',[userId]);
+    const r=await client.query(`UPDATE star_inventory SET status='sold' WHERE id=$1 AND user_id=$2 AND status='owned' RETURNING amount`,[id,userId]);
+    if(!r.rows[0]) throw new Error('item_not_available');
+    const credited=Number(r.rows[0].amount);
+    await client.query('UPDATE users SET balance=balance+$1 WHERE telegram_id=$2',[credited,userId]);
+    await client.query(`INSERT INTO transactions(user_id,type,amount,ref) VALUES($1,'gift_sale',$2,$3)`,[userId,credited,`star-sale:${id}`]);
+    await client.query('COMMIT');return credited;
+  }catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}
+}
+
 /** All paid-case outcomes are decided and persisted server-side in one transaction. */
 export async function openPaidCase(userId: number, caseId: string, betId: string): Promise<CaseOpenResult> {
   const c = caseConfig.find(c => c.id === caseId && c.price > 0);
@@ -415,12 +460,11 @@ export async function openPaidCase(userId: number, caseId: string, betId: string
     reward = { type: "gift", stars: 0, giftId: g.id, inventoryId: Number(inv.rows[0].id), value: g.value };
     }
     }
-    const balance = Number(user.rows[0].balance) - c.price + reward.stars;
+    if(reward.type==='stars') await client.query(`INSERT INTO star_inventory(user_id,case_id,amount) VALUES($1,$2,$3) RETURNING id`,[userId,caseId,reward.stars]).then(r=>{reward.inventoryId=Number(r.rows[0].id)});
+    const balance = Number(user.rows[0].balance) - c.price;
     await client.query(`UPDATE users SET balance=$1 WHERE telegram_id=$2`, [balance,userId]);
     await client.query(`INSERT INTO transactions(user_id,type,amount,bet_id,game,choice)
       VALUES($1,'case_open',$2,$3,'case',$4)`, [userId,-c.price,betId,caseId]);
-    if (reward.stars) await client.query(`INSERT INTO transactions(user_id,type,amount,game,choice)
-      VALUES($1,'case_reward',$2,'case',$3)`, [userId,reward.stars,caseId]);
     await client.query(`INSERT INTO case_spins(bet_id,user_id,case_id,price,reward_type,stars,gift_id,inventory_id)
       VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, [betId,userId,caseId,c.price,reward.type,reward.stars,reward.giftId??null,reward.inventoryId??null]);
     await client.query("COMMIT");
