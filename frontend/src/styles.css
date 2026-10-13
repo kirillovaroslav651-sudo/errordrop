@@ -63,3 +63,4 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 /* Hide decorative scanline overlay */
 .app:after{display:none!important}
+.admin-tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.admin-tool-grid .outline-btn{min-height:48px;padding:10px;font-size:10px}@media(max-width:380px){.admin-tool-grid{grid-template-columns:1fr}}
