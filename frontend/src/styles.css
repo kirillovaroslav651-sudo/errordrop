@@ -65,3 +65,6 @@
 .app:after{display:none!important}
 .admin-tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.admin-tool-grid .outline-btn{min-height:48px;padding:10px;font-size:10px}@media(max-width:380px){.admin-tool-grid{grid-template-columns:1fr}}
 .inventory-bulk{display:flex;gap:8px;margin:16px 0}.inventory-bulk button{flex:1;padding:12px 8px;border-radius:12px;background:#281b20;border:1px solid #8f3939;color:#fff;font-size:11px;font-weight:800}.inventory-bulk button:first-child{background:#b82929}.star-prize .inventory-art{display:grid;place-items:center;font-size:34px}.live-item small{display:block;color:#ffa66c;font-size:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Performance: keep ambient effects on compositor without blocking taps */
+.ambient,.app:before{will-change:transform}.live-strip{contain:content;overscroll-behavior-x:contain}.carousel-card,.panel{will-change:transform}
