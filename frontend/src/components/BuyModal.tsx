@@ -50,11 +50,10 @@ export default function BuyModal({ onClose, onPurchased }: Props) {
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="modal-top"><small>ERRORDROP / BALANCE</small><button disabled={busy} onClick={onClose} aria-label="Закрыть">×</button></div>
         <h3>ПОПОЛНИТЬ БАЛАНС</h3>
-        <p className="sub">Оплата настоящими Telegram Stars (XTR) начисляет <b>игровые ⭐</b> внутри ErrorDrop. При первом успешном пополнении начисляется ещё 50% игровых ⭐ (например, 300 XTR → 450 игровых ⭐). Игровые ⭐ нельзя вывести или обменять на Telegram Stars. 10% от оплаты друга начисляется пригласившему игровыми ⭐.</p>
 
-        <p className="sub"><b>Условия вывода до оплаты:</b> для каждого подарка отдельно нужны подтверждённые пополнения XTR на сумму не меньше стоимости подарка или 5 приглашённых друзей, каждый с пополнением минимум на 20% стоимости подарка в XTR (с округлением вверх). Уже использованные для заявки пополнения и друзья повторно не засчитываются. После первого вывода для каждой следующей заявки нужно повысить уровень (+1 за 10 открытых платных кейсов). Бонусные игровые ⭐ не считаются оплатой. Выдача настоящего подарка обрабатывается вручную; конкретный NFT заранее не зарезервирован.</p>
+        <p className="topup-bonus">ПЕРВОЕ ПОПОЛНЕНИЕ <b>+50%</b></p>
         <label className="custom-topup">СКОЛЬКО ЗВЁЗД ПОПОЛНИТЬ?<input type="number" inputMode="numeric" min="50" max="100000" step="1" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="От 50" aria-label="Количество Telegram Stars для оплаты" /></label>
-        <p className="topup-summary">Оплата: {Number(amount) >= 50 && Number.isSafeInteger(Number(amount)) ? Number(amount).toLocaleString("ru-RU") : "—"} XTR · Начислим столько же игровых ⭐. При первом пополнении дополнительно +50% игровых ⭐.</p>
+        <p className="topup-summary">При первом пополнении начисляется <b>+50% игровых ⭐</b>.</p>
         <button className="btn topup-submit" disabled={busy} onClick={() => void buy()}>{busy ? "ОТКРЫВАЕМ ОПЛАТУ…" : "ПОПОЛНИТЬ →"}</button>
 
         {error && <div className="error-banner">{error}</div>}
