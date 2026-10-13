@@ -313,7 +313,7 @@ router.post("/bet", requireAuth, async (req: any, res: Response) => {
   const game = (req.body.game as string) ?? "roulette";
   const choice = (req.body.choice as string) ?? undefined;
 
-  const VALID_GAMES = ["roulette", "coin"];
+  const VALID_GAMES = ["roulette", "coin", "crash"];
   if (!VALID_GAMES.includes(game))
     return res.status(400).json({ ok: false, error: "invalid_game" });
 
@@ -381,3 +381,4 @@ async function createInvoiceLink(title: string, amount: number, payload: string)
 }
 
 export default router;
+
