@@ -67,7 +67,7 @@ export default function App() {
   const inventory = me?.inventory || [];
   const starInventory = me?.starInventory || [];
   const sourceItem=inventory.find(i=>i.id===upgradeSource);
-  const upgradeTargets=sourceItem?gifts.filter(g=>{const value=starValue(g);return value!==null&&value>sourceItem.value&&sourceItem.value/value*90<=70}).sort((a,b)=>(starValue(a)??0)-(starValue(b)??0)):[];
+  const upgradeTargets=sourceItem?gifts.filter(g=>{const value=starValue(g);return value!==null&&value>sourceItem.value&&Math.floor(sourceItem.value/value*9000)<=6000}).sort((a,b)=>(starValue(a)??0)-(starValue(b)??0)):[];
   const targetGift=gifts.find(g=>g.id===upgradeTarget);
   const targetValue=targetGift?starValue(targetGift)??0:0;
   const upgradeChance=sourceItem&&targetValue?Math.floor(sourceItem.value/targetValue*9000)/100:0;
