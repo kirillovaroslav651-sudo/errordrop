@@ -9,7 +9,6 @@ export default function CrashGame({balance,reload,feel,demo}:Props) {
   const [round,setRound]=useState<CrashRound|null>(null);
   const [history,setHistory]=useState<number[]>([]);
   const [bet,setBet]=useState("100");
-  const [auto,setAuto]=useState("");
   const [repeat,setRepeat]=useState(false);
   const [busy,setBusy]=useState(false);
   const [message,setMessage]=useState("");
@@ -18,7 +17,7 @@ export default function CrashGame({balance,reload,feel,demo}:Props) {
   const pending=useRef(false);
   const submitting=useRef(false);
   const lastResult=useRef("");
-  const plan=useRef<{bet:number;auto:number|null;remaining:number}|null>(null);
+  const plan=useRef<{bet:number;remaining:number}|null>(null);
   const latest=useRef<CrashRound|null>(null);
 
   const accept=useCallback((next:CrashRound|null)=>{
@@ -63,12 +62,12 @@ export default function CrashGame({balance,reload,feel,demo}:Props) {
     const x=i/21, y=84-65*Math.pow(x,2.15); return `${7+x*86},${y}`;
   }).join(" ");
 
-  async function launch(amount:number,autoAt:number|null) {
+  async function launch(amount:number) {
     if(submitting.current || latest.current?.status==="active")return;
     submitting.current=true;
     setBusy(true);setMessage("");feel("medium");
     try {
-      const result=await api.crashStart(crypto.randomUUID(),amount,autoAt);
+      const result=await api.crashStart(crypto.randomUUID(),amount,null);
       accept(result.round);
       if(result.existing) { plan.current=null; setRepeat(false);setMessage("Сначала заверши текущий раунд."); }
       await reload();
@@ -77,13 +76,11 @@ export default function CrashGame({balance,reload,feel,demo}:Props) {
   }
   function start() {
     if(demo)return setMessage("Для игры открой Mini App через Telegram.");
-    const amount=Number(bet), autoAt=auto.trim()===""?null:Number(auto);
+    const amount=Number(bet);
     if(!Number.isInteger(amount)||amount<10||amount>10000)return setMessage("Ставка — от 10 до 10 000 игровых ⭐.");
     if(amount>balance)return setMessage("Недостаточно игровых ⭐ для ставки.");
-    if(autoAt!==null&&(!Number.isFinite(autoAt)||autoAt<1.01||autoAt>1000||Math.abs(Math.round(autoAt*100)-autoAt*100)>1e-8))
-      return setMessage("Авто-забор: от 1.01x до 1000x, шаг 0.01.");
-    plan.current=repeat?{bet:amount,auto:autoAt,remaining:4}:null;
-    void launch(amount,autoAt);
+    plan.current=repeat?{bet:amount,remaining:4}:null;
+    void launch(amount);
   }
   async function cashout() {
     const current=latest.current;
@@ -106,7 +103,7 @@ export default function CrashGame({balance,reload,feel,demo}:Props) {
     const timeout=window.setTimeout(()=>{
       if(!plan.current)return;
       plan.current.remaining--;
-      void launch(next.bet,next.auto);
+      void launch(next.bet);
     },1800);
     return()=>window.clearTimeout(timeout);
   },[round?.id,round?.status]);
@@ -117,20 +114,19 @@ export default function CrashGame({balance,reload,feel,demo}:Props) {
       <div className="crash-grid"/><div className="crash-scan"/>
       <div className="crash-readout"><small>{round?.status==="crashed"?"КРИТИЧЕСКИЙ СБОЙ / ERROR 0x000000FF":round?.status==="cashed"?"ДАННЫЕ ЗАФИКСИРОВАНЫ":"ЗАГРУЗКА ЯДРА / LIVE MULTIPLIER"}</small>
         <strong className={multiplier<2?"low":multiplier<5?"mid":"high"}>{format(multiplier)}<span>×</span></strong>
-        <p>{round?.status==="cashed"?`ВЫПЛАТА +${round.payout} ИГРОВЫХ ⭐`:round?.status==="crashed"?`СТАВКА СГОРЕЛА · ${round.crashPoint?.toFixed(2)}x`:round?.status==="active"?`СТАВКА ${round.bet} ⭐ ${round.autoCashout?`· АВТО ${format(round.autoCashout)}x`:"· ЗАБЕРИ ВОВРЕМЯ"}`:"ЗАПУСТИ ЯДРО И ЗАБЕРИ ВЫИГРЫШ ДО СБОЯ"}</p></div>
+        <p>{round?.status==="cashed"?`ВЫПЛАТА +${round.payout} ИГРОВЫХ ⭐`:round?.status==="crashed"?`СТАВКА СГОРЕЛА · ${round.crashPoint?.toFixed(2)}x`:round?.status==="active"?`СТАВКА ${round.bet} ⭐ · ЗАБЕРИ ВОВРЕМЯ`:"ЗАПУСТИ ЯДРО И ЗАБЕРИ ВЫИГРЫШ ДО СБОЯ"}</p></div>
       <svg className="crash-chart" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="crashLine" x1="0" x2="1"><stop stopColor="#8b0000"/><stop offset="1" stopColor="#ff5722"/></linearGradient></defs><path d="M 7 88 H 96 M 7 88 V 15" className="crash-axis"/><polyline points={curve} fill="none" stroke="url(#crashLine)" strokeWidth="1.8" strokeLinecap="round" strokeDasharray="160" strokeDashoffset={160*(1-progress)}/><circle cx={7+86*progress} cy={84-65*Math.pow(progress,2.15)} r="2.1" className="crash-orb"/></svg>
       <div className="crash-core-visual" style={{left:`${10+80*progress}%`,bottom:`${7+42*progress}%`}}>◆</div>
       <span className="crash-stage-foot">SECURE LINK // {round?.status==="active"?"UNSTABLE":"STANDBY"}</span>
     </section>
     <section className="crash-console panel"><div className="crash-console-top"><span>01 / УПРАВЛЕНИЕ</span><small>HOUSE EDGE 7% · ТОЛЬКО ИГРОВЫЕ ⭐</small></div>
       {round?.status==="active"?<button className="spin-cta crash-action cashout" disabled={busy||multiplier<1.01} onClick={()=>void cashout()}>{busy?"ПРОВЕРКА…":`ЗАБРАТЬ · ≈ ${Math.round(round.bet*multiplier)} ⭐`}</button>
-        :<><div className="crash-fields"><label>СТАВКА <span>⭐</span><input inputMode="numeric" type="number" min="10" max="10000" value={bet} onChange={e=>setBet(e.target.value)}/></label><label>АВТО-ЗАБОР <span>×</span><input inputMode="decimal" type="number" min="1.01" max="1000" step="0.01" placeholder="Выкл." value={auto} onChange={e=>setAuto(e.target.value)}/></label></div>
+        :<><div className="crash-fields"><label>СТАВКА <span>⭐</span><input inputMode="numeric" type="number" min="10" max="10000" value={bet} onChange={e=>setBet(e.target.value)}/></label></div>
           <div className="crash-quick">{[10,50].map(n=><button key={n} onClick={()=>setBet(String(Math.min(10000,(Number(bet)||0)+n)))}>+{n}</button>)}<button onClick={()=>setBet(String(Math.min(10000,(Number(bet)||0)*2)))}>×2</button><button onClick={()=>setBet(String(Math.min(10000,balance)))}>MAX</button></div>
           <label className="crash-repeat"><input type="checkbox" checked={repeat} onChange={e=>{setRepeat(e.target.checked);if(!e.target.checked)plan.current=null}}/> АВТО-СТАВКА <small>не больше 5 раундов; можно остановить</small></label>
           <button className="spin-cta crash-action" disabled={busy||demo} onClick={start}>{busy?"ЗАПУСК…":"ЗАПУСТИТЬ ЯДРО →"}</button></>}
       {plan.current&&<button className="crash-stop" onClick={()=>{plan.current=null;setRepeat(false);setMessage("Авто-ставка остановлена после текущего раунда.")}}>ОСТАНОВИТЬ АВТО-СТАВКУ</button>}
       {message&&<p className="crash-feedback" role="status">{message}</p>}
-      <p className="crash-disclosure">Точка краха определяется сервером до старта. Забор и выплаты подтверждаются сервером, а не анимацией. 1.00x — мгновенный проигрыш. Показанный коэффициент может немного опережать ответ сети. Преимущество системы ~7%; дробная выплата округляется случайно без смещения до целой игровой ⭐.</p>
     </section>
     <section className="crash-history"><div><span>02 / ИСТОРИЯ СБОЕВ</span><small>ПОСЛЕДНИЕ 10 РАУНДОВ</small></div><div className="crash-history-list">{history.length?history.map((point,i)=><span key={i} className={point<2?"low":point<5?"mid":"high"}>{format(point)}×</span>):<p>Раундов пока нет</p>}</div></section>
   </div>;
