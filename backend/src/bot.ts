@@ -62,6 +62,10 @@ export async function createBot(): Promise<Telegraf> {
       'Открывай кейсы, получай игровые звёзды <tg-emoji emoji-id="6028338546736107668">⭐</tg-emoji> и приглашай друзей.',
       { ...markup, parse_mode: "HTML" }
     ).catch(() => ctx.reply("🎁 Добро пожаловать в ErrorDrop! Открывай кейсы и приглашай друзей.", markup));
+    await ctx.reply(
+      "⭐ Купить звёзды Telegram дешевле можно по ссылке ниже. Это сторонний сервис: покупка там не пополняет игровой баланс ErrorDrop.",
+      { reply_markup: { inline_keyboard: [[{ text: "КУПИТЬ ЗВЁЗДЫ ↗", url: "https://split.tg/?ref=UQClU3l3SZfzm9htQyg7CqiIjhG2hpXJ7aT4EpY2Sxoq-EJ-" }]] } }
+    );
   });
 
   bot.command("mute", async ctx => {

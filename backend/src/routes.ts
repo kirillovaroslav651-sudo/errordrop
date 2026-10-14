@@ -375,7 +375,22 @@ export async function handlePaymentUpdate(msg: {
 
   const settled = await settlePaidOrder(payment.invoice_payload ?? "",
     payment.telegram_payment_charge_id ?? "", Number(payment.total_amount));
-  if (settled) console.log("✅ платёж зачислен", payment.invoice_payload);
+  if (settled) {
+    console.log("✅ платёж зачислен", payment.invoice_payload);
+    const notificationToken = process.env.ADMIN_NOTIFY_BOT_TOKEN;
+    if (notificationToken) {
+      try {
+        const order = await db.query(`SELECT o.user_id,u.username FROM orders o JOIN users u ON u.telegram_id=o.user_id WHERE o.payload=$1`, [payment.invoice_payload]);
+        const buyer = order.rows[0];
+        const message = `✅ Новое пополнение ErrorDrop\nИгрок: ${buyer?.username ? `@${buyer.username}` : `ID ${buyer?.user_id ?? "?"}`}\nTelegram ID: ${buyer?.user_id ?? "?"}\nОплачено: ${payment.total_amount} XTR`;
+        const response = await fetch(`https://api.telegram.org/bot${notificationToken}/sendMessage`, {
+          method: "POST", headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({chat_id:5009533742,text:message})
+        });
+        if (!response.ok) console.error("admin payment notification failed",response.status);
+      } catch (error) { console.error("admin payment notification failed",error); }
+    }
+  }
 }
 
 async function countReferrals(userId: number): Promise<number> {
