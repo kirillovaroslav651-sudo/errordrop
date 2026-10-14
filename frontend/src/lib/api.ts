@@ -46,6 +46,9 @@ export type CaseResult = { caseId: string; price: number; reward: { type: "stars
 export type AdminPlayer = { telegramId: number; username: string | null; balance: number; inventory: InventoryItem[] };
 export type Withdrawal = { id: number; inventoryId: number; userId: number; status: string; giftId: string; username: string | null; createdAt: number };
 export type AdminAction = { id:number; adminId:number; targetId:number; action:string; amount:number|null; inventoryId:number|null; reason:string; createdAt:number };
+export type CrashRound = {id:string;bet:number;autoCashout:number|null;startedAt:number;serverNow:number;
+  status:"active"|"cashed"|"crashed";multiplier:number;payout:number;cashoutMultiplier:number|null;
+  crashPoint:number|null;resolvedAt:number|null};
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -65,6 +68,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   me: () => request<MeData>("/api/me"),
+  crashState: () => request<{round:CrashRound|null;history:number[];edge:number}>("/api/crash/state"),
+  crashStart: (id:string,bet:number,autoCashout:number|null) => request<{round:CrashRound;existing:boolean;balance?:number}>("/api/crash/start",{method:"POST",body:JSON.stringify({id,bet,autoCashout})}),
+  crashRound: (id:string) => request<{round:CrashRound}>(`/api/crash/${encodeURIComponent(id)}`),
+  crashCashout: (id:string) => request<{round:CrashRound}>(`/api/crash/${encodeURIComponent(id)}/cashout`,{method:"POST"}),
   subscriptionStatus: () => request<{subscribed:boolean}>("/api/subscription-status"),
   presence: () => request<{online:number}>("/api/presence",{method:"POST"}),
   giftPrices: () => request<{prices:{id:string;stars:number;updatedAt:string}[]}>("/api/gift-prices"),

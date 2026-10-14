@@ -5,6 +5,7 @@ import path from "path";
 import fs from "fs";
 import apiRouter from "./routes";
 import { initDb } from "./db";
+import { startCrashSettler } from "./crash";
 import { createBot } from "./bot";
 import { startTelegramPriceSync } from "./telegramPrices";
 import { startDailyReminders } from "./dailyReminders";
@@ -41,6 +42,7 @@ const PUBLIC = BASE_URL || process.env.WEBAPP_URL || "";
 
 async function start() {
   await initDb();
+  startCrashSettler();
   startTelegramPriceSync();
   const bot = await createBot();
   startDailyReminders(bot, process.env.WEBAPP_URL || PUBLIC);

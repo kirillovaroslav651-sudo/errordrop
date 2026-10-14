@@ -93,6 +93,20 @@ export async function initDb() {
       CREATE UNIQUE INDEX IF NOT EXISTS idx_tx_bet ON transactions(bet_id);
       CREATE UNIQUE INDEX IF NOT EXISTS idx_tx_daily ON transactions(user_id, ref) WHERE type = 'daily_bonus';
       CREATE UNIQUE INDEX IF NOT EXISTS idx_tx_purchase_ref ON transactions(ref);
+      CREATE TABLE IF NOT EXISTS crash_rounds (
+        id TEXT PRIMARY KEY,
+        user_id BIGINT NOT NULL REFERENCES users(telegram_id),
+        bet INTEGER NOT NULL CHECK (bet BETWEEN 10 AND 10000),
+        crash_point NUMERIC(7,2) NOT NULL CHECK (crash_point BETWEEN 1 AND 1000),
+        auto_cashout NUMERIC(7,2) CHECK (auto_cashout BETWEEN 1.01 AND 1000),
+        started_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
+        status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','cashed','crashed')),
+        cashout_multiplier NUMERIC(7,2),
+        payout INTEGER NOT NULL DEFAULT 0,
+        resolved_at TIMESTAMPTZ
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_crash_one_active ON crash_rounds(user_id) WHERE status='active';
+      CREATE INDEX IF NOT EXISTS idx_crash_history ON crash_rounds(resolved_at DESC) WHERE status<>'active';
       CREATE TABLE IF NOT EXISTS orders (
         payload      TEXT PRIMARY KEY,
         user_id      BIGINT NOT NULL,
@@ -595,13 +609,6 @@ function resolveGame(
   choice?: string
 ): { won: boolean; multiplier: number; label: string } {
   switch (game) {
-    case "crash": {
-      const cashout = Number(choice);
-      if (!Number.isFinite(cashout) || cashout < 1.01 || cashout > 1000) return { won: false, multiplier: 1, label: "invalid_cashout" };
-      const r = crypto.randomInt(1, 1000000) / 1000000;
-      const crash = Math.max(1.01, Math.min(1000, Math.floor((0.95 / (1 - r)) * 100) / 100));
-      return { won: cashout <= crash, multiplier: cashout, label: `crash:${crash.toFixed(2)}` };
-    }
     case "coin": {
       const result = crypto.randomInt(2) === 0 ? "heads" : "tails";
       return { won: choice === result, multiplier: 2, label: result };

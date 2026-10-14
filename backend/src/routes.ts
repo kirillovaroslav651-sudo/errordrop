@@ -26,11 +26,44 @@ import {
 import giftCatalog from "./giftCatalog.json";
 import { authGuard, requireAuth, TgUser } from "./auth";
 import { isAdmin, toInt } from "./helpers";
+import { activeCrash, cashoutCrash, crashHistory, getCrash, startCrash, CRASH_EDGE } from "./crash";
 
 const router = Router();
 const BOT_TOKEN = process.env.BOT_TOKEN as string;
 
 router.use(authGuard);
+
+const crashId = (value: unknown): value is string => typeof value === "string" && /^[a-zA-Z0-9_-]{8,80}$/.test(value);
+function crashError(res: Response, error: any) {
+  const code = error?.message;
+  if (["invalid_bet", "duplicate_bet_id", "insufficient_balance", "round_not_found", "user_not_found"].includes(code))
+    return res.status(code === "round_not_found" ? 404 : code === "duplicate_bet_id" ? 409 : 400).json({ok:false,error:code});
+  console.error("crash failed", error);
+  return res.status(500).json({ok:false,error:"crash_failed"});
+}
+router.get("/crash/state", requireAuth, async (req:any,res:Response) => {
+  try { const round=await activeCrash(req.auth.user.id); const history=await crashHistory();
+    return res.json({ok:true,data:{round,history,edge:CRASH_EDGE}});
+  } catch(e) { return crashError(res,e); }
+});
+router.post("/crash/start", requireAuth, async (req:any,res:Response) => {
+  const {id,bet,autoCashout}=req.body ?? {};
+  if (!crashId(id) || !Number.isInteger(bet) || (autoCashout !== null && autoCashout !== undefined &&
+    (typeof autoCashout !== "number" || !Number.isFinite(autoCashout))))
+    return res.status(400).json({ok:false,error:"invalid_bet"});
+  try {return res.json({ok:true,data:await startCrash(req.auth.user.id,id,bet,autoCashout ?? null)});}
+  catch(e) {return crashError(res,e);}
+});
+router.get("/crash/:id", requireAuth, async (req:any,res:Response) => {
+  if(!crashId(req.params.id))return res.status(400).json({ok:false,error:"invalid_bet"});
+  try{return res.json({ok:true,data:{round:await getCrash(req.auth.user.id,req.params.id)}});}
+  catch(e){return crashError(res,e);}
+});
+router.post("/crash/:id/cashout", requireAuth, async (req:any,res:Response) => {
+  if(!crashId(req.params.id))return res.status(400).json({ok:false,error:"invalid_bet"});
+  try{return res.json({ok:true,data:{round:await cashoutCrash(req.auth.user.id,req.params.id)}});}
+  catch(e){return crashError(res,e);}
+});
 
 /** Resolve ref-кода в telegram_id (для /me). */
 async function resolveRef(refCode: string | null): Promise<number | null> {
@@ -336,7 +369,7 @@ router.post("/bet", requireAuth, async (req: any, res: Response) => {
   const game = (req.body.game as string) ?? "roulette";
   const choice = (req.body.choice as string) ?? undefined;
 
-  const VALID_GAMES = ["roulette", "coin", "crash"];
+  const VALID_GAMES = ["roulette", "coin"];
   if (!VALID_GAMES.includes(game))
     return res.status(400).json({ ok: false, error: "invalid_game" });
 
